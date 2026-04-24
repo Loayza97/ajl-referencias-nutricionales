@@ -1,0 +1,638 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Referencia Nutricional — Makis v2</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --negro: #0a0a0a;
+    --carbon: #111111;
+    --gris-oscuro: #1a1a1a;
+    --gris-medio: #2a2a2a;
+    --gris-claro: #888;
+    --blanco: #f5f5f0;
+    --dorado: #c9a84c;
+    --dorado-claro: #e8c97e;
+    --dorado-oscuro: #8a6820;
+    --rojo: #d94f3d;
+    --verde: #4caf6b;
+    --azul: #4c8fd9;
+    --naranja: #e07b39;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: var(--negro);
+    color: var(--blanco);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 48px 32px;
+    position: relative;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 100; opacity: 0.6;
+  }
+  body::after {
+    content: ''; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: repeating-linear-gradient(0deg, transparent, transparent 79px, rgba(201,168,76,0.04) 79px, rgba(201,168,76,0.04) 80px);
+    pointer-events: none; z-index: 0;
+  }
+  .container { max-width: 1400px; margin: 0 auto; position: relative; z-index: 1; }
+
+  /* HEADER */
+  header {
+    display: flex; align-items: flex-end; justify-content: space-between;
+    margin-bottom: 40px; padding-bottom: 32px;
+    border-bottom: 1px solid var(--dorado-oscuro);
+  }
+  .header-left { display: flex; flex-direction: column; gap: 6px; }
+  .label-top {
+    font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 400;
+    letter-spacing: 0.3em; text-transform: uppercase; color: var(--dorado); opacity: 0.8;
+  }
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(56px, 8vw, 96px);
+    letter-spacing: 0.02em; line-height: 0.9; color: var(--blanco);
+  }
+  h1 span { color: var(--dorado); }
+  .header-right { text-align: right; }
+  .header-right p {
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    color: var(--gris-claro); letter-spacing: 0.15em; line-height: 2;
+  }
+  .header-right strong { color: var(--dorado-claro); }
+
+  /* SUPUESTOS BANNER */
+  .supuestos-banner {
+    background: rgba(201,168,76,0.06);
+    border: 1px solid var(--dorado-oscuro);
+    border-left: 3px solid var(--dorado);
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    border-radius: 2px;
+  }
+  .supuestos-banner h3 {
+    font-family: 'DM Mono', monospace; font-size: 10px;
+    letter-spacing: 0.3em; text-transform: uppercase;
+    color: var(--dorado); margin-bottom: 14px;
+  }
+  .supuestos-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 10px;
+  }
+  .supuesto-item {
+    display: flex; gap: 10px; align-items: flex-start;
+  }
+  .supuesto-icon {
+    font-size: 13px; margin-top: 1px; flex-shrink: 0;
+  }
+  .supuesto-text {
+    font-family: 'DM Sans', sans-serif; font-size: 12px;
+    color: var(--blanco); opacity: 0.8; line-height: 1.5;
+  }
+  .supuesto-text strong { color: var(--dorado-claro); opacity: 1; }
+
+  /* LEGEND */
+  .legend {
+    display: flex; gap: 24px; margin-bottom: 40px;
+    padding: 14px 20px;
+    background: var(--gris-oscuro); border: 1px solid var(--gris-medio);
+    border-radius: 4px; flex-wrap: wrap; align-items: center;
+  }
+  .legend-item {
+    display: flex; align-items: center; gap: 8px;
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    color: var(--gris-claro); letter-spacing: 0.1em;
+  }
+  .legend-dot { width: 8px; height: 8px; border-radius: 50%; }
+  .dot-cho { background: var(--azul); }
+  .dot-pro { background: var(--verde); }
+  .dot-gra { background: var(--dorado); }
+  .dot-frito { background: var(--naranja); }
+  .dot-salsa { background: var(--rojo); }
+
+  /* SUMMARY CARDS */
+  .summary-grid {
+    display: grid; grid-template-columns: repeat(7, 1fr);
+    gap: 2px; margin-bottom: 48px;
+  }
+  .summary-card {
+    background: var(--gris-oscuro); border: 1px solid var(--gris-medio);
+    padding: 20px 16px; cursor: default;
+    transition: transform 0.2s, border-color 0.2s;
+    animation: fadeUp 0.5s ease both;
+  }
+  .summary-card:hover { transform: translateY(-3px); border-color: var(--dorado-oscuro); z-index: 2; }
+  .summary-card .rank { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--dorado); letter-spacing: 0.2em; margin-bottom: 8px; }
+  .summary-card .maki-name { font-family: 'Bebas Neue', sans-serif; font-size: 22px; letter-spacing: 0.04em; color: var(--blanco); margin-bottom: 12px; line-height: 1; }
+  .summary-card .kcal-total { font-family: 'Bebas Neue', sans-serif; font-size: 36px; color: var(--dorado-claro); line-height: 1; }
+  .summary-card .kcal-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--gris-claro); letter-spacing: 0.2em; text-transform: uppercase; margin-bottom: 10px; }
+  .summary-card .per-piece { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--blanco); opacity: 0.7; }
+  .summary-card .per-piece strong { color: var(--dorado); opacity: 1; font-size: 13px; }
+  .kcal-bar { height: 2px; background: var(--gris-medio); margin: 10px 0; overflow: hidden; }
+  .kcal-bar-fill { height: 100%; background: linear-gradient(90deg, var(--dorado-oscuro), var(--dorado-claro)); }
+
+  /* SECTION TITLE */
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif; font-size: 32px;
+    letter-spacing: 0.06em; color: var(--dorado); margin-bottom: 24px;
+    padding-top: 16px; border-top: 1px solid var(--gris-medio);
+  }
+
+  /* RANKING TABLE */
+  .ranking-section { margin-bottom: 64px; }
+  .ranking-table { width: 100%; border-collapse: collapse; background: var(--gris-oscuro); border: 1px solid var(--gris-medio); }
+  .ranking-table thead tr { border-bottom: 1px solid var(--dorado-oscuro); }
+  .ranking-table th {
+    font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em;
+    text-transform: uppercase; color: var(--dorado); padding: 14px 20px;
+    text-align: left; font-weight: 400;
+  }
+  .ranking-table th:not(:first-child) { text-align: right; }
+  .ranking-table tbody tr { border-bottom: 1px solid rgba(255,255,255,0.05); transition: background 0.15s; animation: fadeUp 0.5s ease both; }
+  .ranking-table tbody tr:hover { background: rgba(201,168,76,0.06); }
+  .ranking-table td { padding: 16px 20px; font-size: 13px; }
+  .rank-num { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--dorado); opacity: 0.6; min-width: 32px; display: inline-block; }
+  .rank-name { font-family: 'Bebas Neue', sans-serif; font-size: 18px; letter-spacing: 0.05em; color: var(--blanco); }
+  .rank-kcal-total { font-family: 'Bebas Neue', sans-serif; font-size: 24px; color: var(--dorado-claro); text-align: right; }
+  .rank-kcal-pieza { font-family: 'Bebas Neue', sans-serif; font-size: 20px; color: var(--blanco); text-align: right; opacity: 0.7; }
+  .rank-cho { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--azul); text-align: right; }
+  .rank-pro { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--verde); text-align: right; }
+  .rank-gra { font-family: 'DM Mono', monospace; font-size: 12px; color: var(--dorado); text-align: right; }
+  .macro-bar-row { height: 3px; display: flex; gap: 1px; margin-top: 6px; width: 100%; max-width: 160px; margin-left: auto; }
+  .bar-cho, .bar-pro, .bar-gra { height: 100%; }
+  .bar-cho { background: var(--azul); opacity: 0.7; }
+  .bar-pro { background: var(--verde); opacity: 0.7; }
+  .bar-gra { background: var(--dorado); opacity: 0.7; }
+  .badge-lowest { display: inline-block; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.15em; color: var(--verde); border: 1px solid var(--verde); padding: 2px 6px; border-radius: 2px; margin-left: 8px; vertical-align: middle; opacity: 0.8; }
+  .badge-highest { display: inline-block; font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.15em; color: var(--rojo); border: 1px solid var(--rojo); padding: 2px 6px; border-radius: 2px; margin-left: 8px; vertical-align: middle; opacity: 0.8; }
+
+  /* DETAIL CARDS */
+  .cards-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(380px, 1fr)); gap: 2px; margin-bottom: 64px; }
+  .maki-card { background: var(--gris-oscuro); border: 1px solid var(--gris-medio); overflow: hidden; animation: fadeUp 0.6s ease both; transition: box-shadow 0.3s; }
+  .maki-card:hover { box-shadow: 0 0 0 1px var(--dorado-oscuro); }
+  .card-header { padding: 20px 24px 16px; border-bottom: 1px solid var(--gris-medio); display: flex; justify-content: space-between; align-items: flex-start; }
+  .card-header .num { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--dorado); letter-spacing: 0.3em; margin-bottom: 4px; }
+  .card-header h2 { font-family: 'Bebas Neue', sans-serif; font-size: 28px; letter-spacing: 0.04em; color: var(--blanco); line-height: 1; }
+  .card-kcal-block { text-align: right; }
+  .card-kcal-block .big-kcal { font-family: 'Bebas Neue', sans-serif; font-size: 40px; color: var(--dorado-claro); line-height: 1; }
+  .card-kcal-block .big-kcal-label { font-family: 'DM Mono', monospace; font-size: 9px; color: var(--gris-claro); letter-spacing: 0.2em; text-transform: uppercase; }
+  .card-kcal-block .per-uno { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--blanco); opacity: 0.6; margin-top: 4px; }
+  .card-kcal-block .per-uno strong { color: var(--dorado); opacity: 1; }
+  .macro-pills { display: flex; gap: 0; border-bottom: 1px solid var(--gris-medio); }
+  .macro-pill { flex: 1; padding: 12px 16px; border-right: 1px solid var(--gris-medio); text-align: center; }
+  .macro-pill:last-child { border-right: none; }
+  .macro-pill .macro-val { font-family: 'Bebas Neue', sans-serif; font-size: 22px; line-height: 1; }
+  .macro-pill .macro-label { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; opacity: 0.6; margin-top: 2px; }
+  .macro-cho { color: var(--azul); }
+  .macro-pro { color: var(--verde); }
+  .macro-gra { color: var(--dorado); }
+  .ingredients-table { width: 100%; border-collapse: collapse; }
+  .ingredients-table tr { border-bottom: 1px solid rgba(255,255,255,0.04); transition: background 0.15s; }
+  .ingredients-table tr:last-child { border-bottom: none; }
+  .ingredients-table tr:hover { background: rgba(201,168,76,0.04); }
+  .ingredients-table td { padding: 9px 24px; font-size: 12px; }
+  .td-name { color: var(--blanco); opacity: 0.85; font-weight: 400; letter-spacing: 0.02em; }
+  .td-cant { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--dorado); text-align: right; white-space: nowrap; }
+  .td-kcal { font-family: 'DM Mono', monospace; font-size: 11px; color: var(--gris-claro); text-align: right; }
+  .td-cho { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--azul); text-align: right; opacity: 0.8; }
+  .td-pro { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--verde); text-align: right; opacity: 0.8; }
+  .td-gra { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--dorado); text-align: right; opacity: 0.8; }
+  .table-header td { font-family: 'DM Mono', monospace; font-size: 9px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--gris-claro) !important; opacity: 0.5; padding-top: 14px; padding-bottom: 8px; border-bottom: 1px solid var(--gris-medio) !important; }
+  .total-row td { padding-top: 12px; padding-bottom: 14px; border-top: 1px solid var(--gris-medio) !important; font-weight: 500; }
+  .total-row .td-name { font-family: 'DM Mono', monospace; font-size: 10px; letter-spacing: 0.2em; text-transform: uppercase; color: var(--dorado); opacity: 1; }
+  .total-row .td-kcal { color: var(--dorado-claro); font-size: 13px; }
+
+  /* Tags on ingredients */
+  .tag-frito { display: inline-block; font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.1em; color: var(--naranja); border: 1px solid var(--naranja); padding: 1px 4px; border-radius: 2px; margin-left: 5px; opacity: 0.85; vertical-align: middle; }
+  .tag-mayo { display: inline-block; font-family: 'DM Mono', monospace; font-size: 8px; letter-spacing: 0.1em; color: var(--rojo); border: 1px solid var(--rojo); padding: 1px 4px; border-radius: 2px; margin-left: 5px; opacity: 0.85; vertical-align: middle; }
+
+  /* FOOTER */
+  footer { padding-top: 32px; border-top: 1px solid var(--gris-medio); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 8px; }
+  footer p { font-family: 'DM Mono', monospace; font-size: 10px; color: var(--gris-claro); opacity: 0.5; letter-spacing: 0.15em; }
+
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: translateY(0); } }
+  .summary-card:nth-child(1){animation-delay:.05s} .summary-card:nth-child(2){animation-delay:.10s} .summary-card:nth-child(3){animation-delay:.15s} .summary-card:nth-child(4){animation-delay:.20s} .summary-card:nth-child(5){animation-delay:.25s} .summary-card:nth-child(6){animation-delay:.30s} .summary-card:nth-child(7){animation-delay:.35s}
+  .maki-card:nth-child(1){animation-delay:.1s} .maki-card:nth-child(2){animation-delay:.2s} .maki-card:nth-child(3){animation-delay:.3s} .maki-card:nth-child(4){animation-delay:.4s} .maki-card:nth-child(5){animation-delay:.5s} .maki-card:nth-child(6){animation-delay:.6s} .maki-card:nth-child(7){animation-delay:.7s}
+
+  @media (max-width: 900px) {
+    .summary-grid { grid-template-columns: repeat(3, 1fr); }
+    .cards-grid { grid-template-columns: 1fr; }
+    header { flex-direction: column; gap: 16px; }
+    .header-right { text-align: left; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-left">
+      <span class="label-top">▸ Referencia Nutricional · v2 Revisado</span>
+      <h1>MAKIS<br><span>TABLA</span></h1>
+    </div>
+    <div class="header-right">
+      <p><strong>PORCIÓN</strong> — 1 Tabla = 10 piezas</p>
+      <p><strong>VALORES</strong> — Estimados con criterios reales de fritura</p>
+      <p><strong>FUENTE</strong> — AJL Nutrición · 2026</p>
+      <p><strong>NOTA</strong> — Valores por ½ tabla ÷ 2</p>
+    </div>
+  </header>
+
+  <!-- SUPUESTOS -->
+  <div class="supuestos-banner">
+    <h3>▸ Supuestos de cálculo — Criterios aplicados en esta versión</h3>
+    <div class="supuestos-grid">
+      <div class="supuesto-item">
+        <span class="supuesto-icon">🔥</span>
+        <div class="supuesto-text"><strong>Langostino empanizado / tempura:</strong> calculado como deep fried. Absorción de aceite ~8-10g por porción de 35g → 160 kcal (empanizado) / 150 kcal (tempura).</div>
+      </div>
+      <div class="supuesto-item">
+        <span class="supuesto-icon">🔥</span>
+        <div class="supuesto-text"><strong>Crispy roll (panko):</strong> roll completo frito en aceite. Panko absorbe ~10g aceite adicional → 145 kcal vs 75 kcal en seco.</div>
+      </div>
+      <div class="supuesto-item">
+        <span class="supuesto-icon">🔥</span>
+        <div class="supuesto-text"><strong>Camote frito (acevichado):</strong> calculado como camote frito estilo chip/wedge → ~160 kcal/100g → 8 kcal por 5g de guarnición.</div>
+      </div>
+      <div class="supuesto-item">
+        <span class="supuesto-icon">🥄</span>
+        <div class="supuesto-text"><strong>Salsa Acevichada 45g:</strong> base ~50% mayonesa + leche de tigre. Corregido a 90 kcal (antes 40 kcal que era incorrecto).</div>
+      </div>
+      <div class="supuesto-item">
+        <span class="supuesto-icon">🥄</span>
+        <div class="supuesto-text"><strong>Salsa Imperial 40g:</strong> mayonesa + ají amarillo, muy densa en grasa. ~200 kcal, 22g de grasa por porción.</div>
+      </div>
+      <div class="supuesto-item">
+        <span class="supuesto-icon">🥄</span>
+        <div class="supuesto-text"><strong>Salsa Volcán 10g:</strong> spicy mayo (~680 kcal/100g). Corregido a 68 kcal (antes 35 kcal).</div>
+      </div>
+      <div class="supuesto-item">
+        <span class="supuesto-icon">🥄</span>
+        <div class="supuesto-text"><strong>Salsa Seiji 60g:</strong> salsa cremosa con base mayo. 60g → ~200 kcal, 22g grasa. Era el mayor error: antes 90 kcal.</div>
+      </div>
+      <div class="supuesto-item">
+        <span class="supuesto-icon">📊</span>
+        <div class="supuesto-text"><strong>Salsa Anguila 8g:</strong> soy + mirin + azúcar, sin grasa. Ligera corrección a 20 kcal, principalmente carbohidratos (azúcar).</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- LEGEND -->
+  <div class="legend">
+    <div class="legend-item"><span class="legend-dot dot-cho"></span>CHO — Carbohidratos</div>
+    <div class="legend-item"><span class="legend-dot dot-pro"></span>PRO — Proteínas</div>
+    <div class="legend-item"><span class="legend-dot dot-gra"></span>GRA — Grasas</div>
+    <div class="legend-item"><span class="legend-dot dot-frito"></span>FRITO — Ingrediente frito (aceite incluido)</div>
+    <div class="legend-item"><span class="legend-dot dot-salsa"></span>MAYO — Salsa base mayonesa</div>
+    <div style="margin-left:auto; font-family:'DM Mono',monospace; font-size:10px; color:#555;">Tabla completa = 10 piezas · ½ tabla ÷ 2</div>
+  </div>
+
+  <!-- SUMMARY CARDS — ordered by kcal asc -->
+  <div class="summary-grid">
+    <div class="summary-card">
+      <div class="rank">01</div>
+      <div class="maki-name">NEW CALI</div>
+      <div class="kcal-bar"><div class="kcal-bar-fill" style="width:70%"></div></div>
+      <div class="kcal-total">485</div>
+      <div class="kcal-label">kcal / tabla</div>
+      <div class="per-piece">Por pieza: <strong>~49 kcal</strong></div>
+    </div>
+    <div class="summary-card">
+      <div class="rank">02</div>
+      <div class="maki-name">ACEVICHADO</div>
+      <div class="kcal-bar"><div class="kcal-bar-fill" style="width:81%"></div></div>
+      <div class="kcal-total">557</div>
+      <div class="kcal-label">kcal / tabla</div>
+      <div class="per-piece">Por pieza: <strong>~56 kcal</strong></div>
+    </div>
+    <div class="summary-card">
+      <div class="rank">03</div>
+      <div class="maki-name">AVOCADO</div>
+      <div class="kcal-bar"><div class="kcal-bar-fill" style="width:85%"></div></div>
+      <div class="kcal-total">585</div>
+      <div class="kcal-label">kcal / tabla</div>
+      <div class="per-piece">Por pieza: <strong>~59 kcal</strong></div>
+    </div>
+    <div class="summary-card">
+      <div class="rank">04</div>
+      <div class="maki-name">CRISPY</div>
+      <div class="kcal-bar"><div class="kcal-bar-fill" style="width:87%"></div></div>
+      <div class="kcal-total">604</div>
+      <div class="kcal-label">kcal / tabla</div>
+      <div class="per-piece">Por pieza: <strong>~60 kcal</strong></div>
+    </div>
+    <div class="summary-card">
+      <div class="rank">05</div>
+      <div class="maki-name">PARMA</div>
+      <div class="kcal-bar"><div class="kcal-bar-fill" style="width:87%"></div></div>
+      <div class="kcal-total">604</div>
+      <div class="kcal-label">kcal / tabla</div>
+      <div class="per-piece">Por pieza: <strong>~60 kcal</strong></div>
+    </div>
+    <div class="summary-card">
+      <div class="rank">06</div>
+      <div class="maki-name">IMPERIAL</div>
+      <div class="kcal-bar"><div class="kcal-bar-fill" style="width:99%"></div></div>
+      <div class="kcal-total">685</div>
+      <div class="kcal-label">kcal / tabla</div>
+      <div class="per-piece">Por pieza: <strong>~69 kcal</strong></div>
+    </div>
+    <div class="summary-card">
+      <div class="rank">07</div>
+      <div class="maki-name">SEIJI</div>
+      <div class="kcal-bar"><div class="kcal-bar-fill" style="width:100%"></div></div>
+      <div class="kcal-total">690</div>
+      <div class="kcal-label">kcal / tabla</div>
+      <div class="per-piece">Por pieza: <strong>~69 kcal</strong></div>
+    </div>
+  </div>
+
+  <!-- RANKING TABLE -->
+  <div class="ranking-section">
+    <div class="section-title">RANKING COMPARATIVO</div>
+    <table class="ranking-table">
+      <thead>
+        <tr>
+          <th>#</th><th>Maki</th><th>Kcal / Tabla</th><th>Kcal / Pieza</th>
+          <th>CHO</th><th>PRO</th><th>GRA</th><th>Distribución</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><span class="rank-num">01</span></td>
+          <td><span class="rank-name">NEW CALIFORNIA</span> <span class="badge-lowest">MENOR KCAL</span></td>
+          <td class="rank-kcal-total">485</td><td class="rank-kcal-pieza">49</td>
+          <td class="rank-cho">61.1g</td><td class="rank-pro">18.4g</td><td class="rank-gra">18.3g</td>
+          <td><div class="macro-bar-row"><div class="bar-cho" style="width:62%"></div><div class="bar-pro" style="width:19%"></div><div class="bar-gra" style="width:19%"></div></div></td>
+        </tr>
+        <tr>
+          <td><span class="rank-num">02</span></td>
+          <td><span class="rank-name">ACEVICHADO</span></td>
+          <td class="rank-kcal-total">557</td><td class="rank-kcal-pieza">56</td>
+          <td class="rank-cho">59.6g</td><td class="rank-pro">21.5g</td><td class="rank-gra">26.3g</td>
+          <td><div class="macro-bar-row"><div class="bar-cho" style="width:56%"></div><div class="bar-pro" style="width:20%"></div><div class="bar-gra" style="width:24%"></div></div></td>
+        </tr>
+        <tr>
+          <td><span class="rank-num">03</span></td>
+          <td><span class="rank-name">AVOCADO</span></td>
+          <td class="rank-kcal-total">585</td><td class="rank-kcal-pieza">59</td>
+          <td class="rank-cho">62.4g</td><td class="rank-pro">22.8g</td><td class="rank-gra">27.5g</td>
+          <td><div class="macro-bar-row"><div class="bar-cho" style="width:57%"></div><div class="bar-pro" style="width:21%"></div><div class="bar-gra" style="width:22%"></div></div></td>
+        </tr>
+        <tr>
+          <td><span class="rank-num">04</span></td>
+          <td><span class="rank-name">CRISPY</span> <span class="badge-highest">MAYOR CHO</span></td>
+          <td class="rank-kcal-total">604</td><td class="rank-kcal-pieza">60</td>
+          <td class="rank-cho">71.1g</td><td class="rank-pro">16.0g</td><td class="rank-gra">30.9g</td>
+          <td><div class="macro-bar-row"><div class="bar-cho" style="width:63%"></div><div class="bar-pro" style="width:14%"></div><div class="bar-gra" style="width:23%"></div></div></td>
+        </tr>
+        <tr>
+          <td><span class="rank-num">05</span></td>
+          <td><span class="rank-name">PARMA</span> <span class="badge-lowest">MAYOR PRO</span></td>
+          <td class="rank-kcal-total">604</td><td class="rank-kcal-pieza">60</td>
+          <td class="rank-cho">61.2g</td><td class="rank-pro">22.9g</td><td class="rank-gra">30.6g</td>
+          <td><div class="macro-bar-row"><div class="bar-cho" style="width:56%"></div><div class="bar-pro" style="width:21%"></div><div class="bar-gra" style="width:23%"></div></div></td>
+        </tr>
+        <tr>
+          <td><span class="rank-num">06</span></td>
+          <td><span class="rank-name">IMPERIAL</span> <span class="badge-highest">MAYOR GRASA</span></td>
+          <td class="rank-kcal-total">685</td><td class="rank-kcal-pieza">69</td>
+          <td class="rank-cho">61.1g</td><td class="rank-pro">20.3g</td><td class="rank-gra">41.1g</td>
+          <td><div class="macro-bar-row"><div class="bar-cho" style="width:49%"></div><div class="bar-pro" style="width:16%"></div><div class="bar-gra" style="width:35%"></div></div></td>
+        </tr>
+        <tr>
+          <td><span class="rank-num">07</span></td>
+          <td><span class="rank-name">SEIJI</span> <span class="badge-highest">MAYOR KCAL</span></td>
+          <td class="rank-kcal-total">690</td><td class="rank-kcal-pieza">69</td>
+          <td class="rank-cho">68.2g</td><td class="rank-pro">18.5g</td><td class="rank-gra">40.5g</td>
+          <td><div class="macro-bar-row"><div class="bar-cho" style="width:52%"></div><div class="bar-pro" style="width:14%"></div><div class="bar-gra" style="width:34%"></div></div></td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- DETAIL CARDS -->
+  <div class="section-title">DESGLOSE POR INGREDIENTE</div>
+  <div class="cards-grid">
+
+    <!-- 1. ACEVICHADO -->
+    <div class="maki-card">
+      <div class="card-header">
+        <div><div class="num">01 / 07</div><h2>ACEVICHADO</h2></div>
+        <div class="card-kcal-block">
+          <div class="big-kcal">557</div>
+          <div class="big-kcal-label">kcal / tabla</div>
+          <div class="per-uno">Por pieza: <strong>~56 kcal</strong></div>
+        </div>
+      </div>
+      <div class="macro-pills">
+        <div class="macro-pill"><div class="macro-val macro-cho">59.6g</div><div class="macro-label">CHO</div></div>
+        <div class="macro-pill"><div class="macro-val macro-pro">21.5g</div><div class="macro-label">PRO</div></div>
+        <div class="macro-pill"><div class="macro-val macro-gra">26.3g</div><div class="macro-label">GRA</div></div>
+      </div>
+      <table class="ingredients-table">
+        <tr class="table-header"><td>Ingrediente</td><td style="text-align:right">Cant.</td><td style="text-align:right">Kcal</td><td style="text-align:right">CHO</td><td style="text-align:right">PRO</td><td style="text-align:right">GRA</td></tr>
+        <tr><td class="td-name">Shari</td><td class="td-cant">140g</td><td class="td-kcal">182</td><td class="td-cho">40.6g</td><td class="td-pro">3.5g</td><td class="td-gra">0.4g</td></tr>
+        <tr><td class="td-name">Alga Nori</td><td class="td-cant">0.5 und</td><td class="td-kcal">3</td><td class="td-cho">0.3g</td><td class="td-pro">0.4g</td><td class="td-gra">—</td></tr>
+        <tr><td class="td-name">Palta</td><td class="td-cant">55g</td><td class="td-kcal">88</td><td class="td-cho">4.7g</td><td class="td-pro">1.1g</td><td class="td-gra">8.0g</td></tr>
+        <tr><td class="td-name">Langostino Empanizado <span class="tag-frito">DEEP FRIED</span></td><td class="td-cant">35g</td><td class="td-kcal">160</td><td class="td-cho">10.0g</td><td class="td-pro">10.0g</td><td class="td-gra">9.0g</td></tr>
+        <tr><td class="td-name">Salsa Acevichada <span class="tag-mayo">BASE MAYO</span></td><td class="td-cant">45g</td><td class="td-kcal">90</td><td class="td-cho">3.0g</td><td class="td-pro">1.0g</td><td class="td-gra">8.0g</td></tr>
+        <tr><td class="td-name">Camote <span class="tag-frito">FRITO</span></td><td class="td-cant">5g</td><td class="td-kcal">8</td><td class="td-cho">1.0g</td><td class="td-pro">0.1g</td><td class="td-gra">0.4g</td></tr>
+        <tr><td class="td-name">Bonito</td><td class="td-cant">20g</td><td class="td-kcal">26</td><td class="td-cho">—</td><td class="td-pro">5.4g</td><td class="td-gra">0.5g</td></tr>
+        <tr><td class="td-name">Togarashi</td><td class="td-cant">0.2g</td><td class="td-kcal">—</td><td class="td-cho">—</td><td class="td-pro">—</td><td class="td-gra">—</td></tr>
+        <tr class="total-row"><td class="td-name">TOTAL</td><td></td><td class="td-kcal">557</td><td class="td-cho">59.6g</td><td class="td-pro">21.5g</td><td class="td-gra">26.3g</td></tr>
+      </table>
+    </div>
+
+    <!-- 2. AVOCADO -->
+    <div class="maki-card">
+      <div class="card-header">
+        <div><div class="num">02 / 07</div><h2>AVOCADO</h2></div>
+        <div class="card-kcal-block">
+          <div class="big-kcal">585</div>
+          <div class="big-kcal-label">kcal / tabla</div>
+          <div class="per-uno">Por pieza: <strong>~59 kcal</strong></div>
+        </div>
+      </div>
+      <div class="macro-pills">
+        <div class="macro-pill"><div class="macro-val macro-cho">62.4g</div><div class="macro-label">CHO</div></div>
+        <div class="macro-pill"><div class="macro-val macro-pro">22.8g</div><div class="macro-label">PRO</div></div>
+        <div class="macro-pill"><div class="macro-val macro-gra">27.5g</div><div class="macro-label">GRA</div></div>
+      </div>
+      <table class="ingredients-table">
+        <tr class="table-header"><td>Ingrediente</td><td style="text-align:right">Cant.</td><td style="text-align:right">Kcal</td><td style="text-align:right">CHO</td><td style="text-align:right">PRO</td><td style="text-align:right">GRA</td></tr>
+        <tr><td class="td-name">Shari</td><td class="td-cant">140g</td><td class="td-kcal">182</td><td class="td-cho">40.6g</td><td class="td-pro">3.5g</td><td class="td-gra">0.4g</td></tr>
+        <tr><td class="td-name">Alga Nori</td><td class="td-cant">0.5 und</td><td class="td-kcal">3</td><td class="td-cho">0.3g</td><td class="td-pro">0.4g</td><td class="td-gra">—</td></tr>
+        <tr><td class="td-name">Queso Crema</td><td class="td-cant">30g</td><td class="td-kcal">99</td><td class="td-cho">1.0g</td><td class="td-pro">1.8g</td><td class="td-gra">9.9g</td></tr>
+        <tr><td class="td-name">Langostino Empanizado <span class="tag-frito">DEEP FRIED</span></td><td class="td-cant">35g</td><td class="td-kcal">160</td><td class="td-cho">10.0g</td><td class="td-pro">10.0g</td><td class="td-gra">9.0g</td></tr>
+        <tr><td class="td-name">Trucha</td><td class="td-cant">25g</td><td class="td-kcal">40</td><td class="td-cho">—</td><td class="td-pro">5.5g</td><td class="td-gra">2.0g</td></tr>
+        <tr><td class="td-name">Palta</td><td class="td-cant">35g</td><td class="td-kcal">56</td><td class="td-cho">3.0g</td><td class="td-pro">0.7g</td><td class="td-gra">5.1g</td></tr>
+        <tr><td class="td-name">Tenkatsu</td><td class="td-cant">5g</td><td class="td-kcal">25</td><td class="td-cho">3.0g</td><td class="td-pro">0.5g</td><td class="td-gra">1.0g</td></tr>
+        <tr><td class="td-name">Salsa Anguila</td><td class="td-cant">8g</td><td class="td-kcal">20</td><td class="td-cho">4.5g</td><td class="td-pro">0.4g</td><td class="td-gra">0.1g</td></tr>
+        <tr class="total-row"><td class="td-name">TOTAL</td><td></td><td class="td-kcal">585</td><td class="td-cho">62.4g</td><td class="td-pro">22.8g</td><td class="td-gra">27.5g</td></tr>
+      </table>
+    </div>
+
+    <!-- 3. CRISPY -->
+    <div class="maki-card">
+      <div class="card-header">
+        <div><div class="num">03 / 07</div><h2>CRISPY</h2></div>
+        <div class="card-kcal-block">
+          <div class="big-kcal">604</div>
+          <div class="big-kcal-label">kcal / tabla</div>
+          <div class="per-uno">Por pieza: <strong>~60 kcal</strong></div>
+        </div>
+      </div>
+      <div class="macro-pills">
+        <div class="macro-pill"><div class="macro-val macro-cho">71.1g</div><div class="macro-label">CHO</div></div>
+        <div class="macro-pill"><div class="macro-val macro-pro">16.0g</div><div class="macro-label">PRO</div></div>
+        <div class="macro-pill"><div class="macro-val macro-gra">30.9g</div><div class="macro-label">GRA</div></div>
+      </div>
+      <table class="ingredients-table">
+        <tr class="table-header"><td>Ingrediente</td><td style="text-align:right">Cant.</td><td style="text-align:right">Kcal</td><td style="text-align:right">CHO</td><td style="text-align:right">PRO</td><td style="text-align:right">GRA</td></tr>
+        <tr><td class="td-name">Shari</td><td class="td-cant">140g</td><td class="td-kcal">182</td><td class="td-cho">40.6g</td><td class="td-pro">3.5g</td><td class="td-gra">0.4g</td></tr>
+        <tr><td class="td-name">Queso Crema</td><td class="td-cant">30g</td><td class="td-kcal">99</td><td class="td-cho">1.0g</td><td class="td-pro">1.8g</td><td class="td-gra">9.9g</td></tr>
+        <tr><td class="td-name">Palta</td><td class="td-cant">55g</td><td class="td-kcal">88</td><td class="td-cho">4.7g</td><td class="td-pro">1.1g</td><td class="td-gra">8.0g</td></tr>
+        <tr><td class="td-name">Trucha</td><td class="td-cant">25g</td><td class="td-kcal">40</td><td class="td-cho">—</td><td class="td-pro">5.5g</td><td class="td-gra">2.0g</td></tr>
+        <tr><td class="td-name">Harina</td><td class="td-cant">7g</td><td class="td-kcal">25</td><td class="td-cho">5.3g</td><td class="td-pro">0.7g</td><td class="td-gra">0.1g</td></tr>
+        <tr><td class="td-name">Huevo</td><td class="td-cant">3.45g</td><td class="td-kcal">5</td><td class="td-cho">—</td><td class="td-pro">0.4g</td><td class="td-gra">0.4g</td></tr>
+        <tr><td class="td-name">Panko <span class="tag-frito">DEEP FRIED</span></td><td class="td-cant">20g</td><td class="td-kcal">145</td><td class="td-cho">15.0g</td><td class="td-pro">2.5g</td><td class="td-gra">10.0g</td></tr>
+        <tr><td class="td-name">Salsa Anguila</td><td class="td-cant">8g</td><td class="td-kcal">20</td><td class="td-cho">4.5g</td><td class="td-pro">0.5g</td><td class="td-gra">0.1g</td></tr>
+        <tr class="total-row"><td class="td-name">TOTAL</td><td></td><td class="td-kcal">604</td><td class="td-cho">71.1g</td><td class="td-pro">16.0g</td><td class="td-gra">30.9g</td></tr>
+      </table>
+    </div>
+
+    <!-- 4. IMPERIAL -->
+    <div class="maki-card">
+      <div class="card-header">
+        <div><div class="num">04 / 07</div><h2>IMPERIAL</h2></div>
+        <div class="card-kcal-block">
+          <div class="big-kcal">685</div>
+          <div class="big-kcal-label">kcal / tabla</div>
+          <div class="per-uno">Por pieza: <strong>~69 kcal</strong></div>
+        </div>
+      </div>
+      <div class="macro-pills">
+        <div class="macro-pill"><div class="macro-val macro-cho">61.1g</div><div class="macro-label">CHO</div></div>
+        <div class="macro-pill"><div class="macro-val macro-pro">20.3g</div><div class="macro-label">PRO</div></div>
+        <div class="macro-pill"><div class="macro-val macro-gra">41.1g</div><div class="macro-label">GRA</div></div>
+      </div>
+      <table class="ingredients-table">
+        <tr class="table-header"><td>Ingrediente</td><td style="text-align:right">Cant.</td><td style="text-align:right">Kcal</td><td style="text-align:right">CHO</td><td style="text-align:right">PRO</td><td style="text-align:right">GRA</td></tr>
+        <tr><td class="td-name">Shari</td><td class="td-cant">140g</td><td class="td-kcal">182</td><td class="td-cho">40.6g</td><td class="td-pro">3.5g</td><td class="td-gra">0.4g</td></tr>
+        <tr><td class="td-name">Alga Nori</td><td class="td-cant">0.5 und</td><td class="td-kcal">3</td><td class="td-cho">0.3g</td><td class="td-pro">0.4g</td><td class="td-gra">—</td></tr>
+        <tr><td class="td-name">Palta</td><td class="td-cant">55g</td><td class="td-kcal">88</td><td class="td-cho">4.7g</td><td class="td-pro">1.1g</td><td class="td-gra">8.0g</td></tr>
+        <tr><td class="td-name">Langostino Empanizado <span class="tag-frito">DEEP FRIED</span></td><td class="td-cant">35g</td><td class="td-kcal">160</td><td class="td-cho">10.0g</td><td class="td-pro">10.0g</td><td class="td-gra">9.0g</td></tr>
+        <tr><td class="td-name">Salsa Imperial <span class="tag-mayo">BASE MAYO</span></td><td class="td-cant">40g</td><td class="td-kcal">200</td><td class="td-cho">1.0g</td><td class="td-pro">0.5g</td><td class="td-gra">22.0g</td></tr>
+        <tr><td class="td-name">Trucha</td><td class="td-cant">20g</td><td class="td-kcal">32</td><td class="td-cho">—</td><td class="td-pro">4.4g</td><td class="td-gra">1.6g</td></tr>
+        <tr><td class="td-name">Salsa Anguila</td><td class="td-cant">8g</td><td class="td-kcal">20</td><td class="td-cho">4.5g</td><td class="td-pro">0.4g</td><td class="td-gra">0.1g</td></tr>
+        <tr><td class="td-name">Togarashi</td><td class="td-cant">0.02g</td><td class="td-kcal">—</td><td class="td-cho">—</td><td class="td-pro">—</td><td class="td-gra">—</td></tr>
+        <tr class="total-row"><td class="td-name">TOTAL</td><td></td><td class="td-kcal">685</td><td class="td-cho">61.1g</td><td class="td-pro">20.3g</td><td class="td-gra">41.1g</td></tr>
+      </table>
+    </div>
+
+    <!-- 5. NEW CALIFORNIA -->
+    <div class="maki-card">
+      <div class="card-header">
+        <div><div class="num">05 / 07</div><h2>NEW CALIFORNIA</h2></div>
+        <div class="card-kcal-block">
+          <div class="big-kcal">485</div>
+          <div class="big-kcal-label">kcal / tabla</div>
+          <div class="per-uno">Por pieza: <strong>~49 kcal</strong></div>
+        </div>
+      </div>
+      <div class="macro-pills">
+        <div class="macro-pill"><div class="macro-val macro-cho">61.1g</div><div class="macro-label">CHO</div></div>
+        <div class="macro-pill"><div class="macro-val macro-pro">18.4g</div><div class="macro-label">PRO</div></div>
+        <div class="macro-pill"><div class="macro-val macro-gra">18.3g</div><div class="macro-label">GRA</div></div>
+      </div>
+      <table class="ingredients-table">
+        <tr class="table-header"><td>Ingrediente</td><td style="text-align:right">Cant.</td><td style="text-align:right">Kcal</td><td style="text-align:right">CHO</td><td style="text-align:right">PRO</td><td style="text-align:right">GRA</td></tr>
+        <tr><td class="td-name">Shari</td><td class="td-cant">140g</td><td class="td-kcal">182</td><td class="td-cho">40.6g</td><td class="td-pro">3.5g</td><td class="td-gra">0.4g</td></tr>
+        <tr><td class="td-name">Alga Nori</td><td class="td-cant">0.5 und</td><td class="td-kcal">3</td><td class="td-cho">0.3g</td><td class="td-pro">0.4g</td><td class="td-gra">—</td></tr>
+        <tr><td class="td-name">Langostino Tempura <span class="tag-frito">DEEP FRIED</span></td><td class="td-cant">35g</td><td class="td-kcal">150</td><td class="td-cho">11.0g</td><td class="td-pro">9.0g</td><td class="td-gra">7.0g</td></tr>
+        <tr><td class="td-name">Salmón</td><td class="td-cant">20g</td><td class="td-kcal">42</td><td class="td-cho">—</td><td class="td-pro">4.0g</td><td class="td-gra">2.8g</td></tr>
+        <tr><td class="td-name">Palta</td><td class="td-cant">55g</td><td class="td-kcal">88</td><td class="td-cho">4.7g</td><td class="td-pro">1.1g</td><td class="td-gra">8.0g</td></tr>
+        <tr><td class="td-name">Salsa Anguila</td><td class="td-cant">8g</td><td class="td-kcal">20</td><td class="td-cho">4.5g</td><td class="td-pro">0.4g</td><td class="td-gra">0.1g</td></tr>
+        <tr><td class="td-name">Quinua Frita</td><td class="td-cant">0.02g</td><td class="td-kcal">—</td><td class="td-cho">—</td><td class="td-pro">—</td><td class="td-gra">—</td></tr>
+        <tr class="total-row"><td class="td-name">TOTAL</td><td></td><td class="td-kcal">485</td><td class="td-cho">61.1g</td><td class="td-pro">18.4g</td><td class="td-gra">18.3g</td></tr>
+      </table>
+    </div>
+
+    <!-- 6. PARMA -->
+    <div class="maki-card">
+      <div class="card-header">
+        <div><div class="num">06 / 07</div><h2>PARMA</h2></div>
+        <div class="card-kcal-block">
+          <div class="big-kcal">604</div>
+          <div class="big-kcal-label">kcal / tabla</div>
+          <div class="per-uno">Por pieza: <strong>~60 kcal</strong></div>
+        </div>
+      </div>
+      <div class="macro-pills">
+        <div class="macro-pill"><div class="macro-val macro-cho">61.2g</div><div class="macro-label">CHO</div></div>
+        <div class="macro-pill"><div class="macro-val macro-pro">22.9g</div><div class="macro-label">PRO</div></div>
+        <div class="macro-pill"><div class="macro-val macro-gra">30.6g</div><div class="macro-label">GRA</div></div>
+      </div>
+      <table class="ingredients-table">
+        <tr class="table-header"><td>Ingrediente</td><td style="text-align:right">Cant.</td><td style="text-align:right">Kcal</td><td style="text-align:right">CHO</td><td style="text-align:right">PRO</td><td style="text-align:right">GRA</td></tr>
+        <tr><td class="td-name">Shari</td><td class="td-cant">140g</td><td class="td-kcal">182</td><td class="td-cho">40.6g</td><td class="td-pro">3.5g</td><td class="td-gra">0.4g</td></tr>
+        <tr><td class="td-name">Alga Nori</td><td class="td-cant">0.5 und</td><td class="td-kcal">3</td><td class="td-cho">0.3g</td><td class="td-pro">0.4g</td><td class="td-gra">—</td></tr>
+        <tr><td class="td-name">Palta</td><td class="td-cant">55g</td><td class="td-kcal">88</td><td class="td-cho">4.7g</td><td class="td-pro">1.1g</td><td class="td-gra">8.0g</td></tr>
+        <tr><td class="td-name">Langostino Empanizado <span class="tag-frito">DEEP FRIED</span></td><td class="td-cant">35g</td><td class="td-kcal">160</td><td class="td-cho">10.0g</td><td class="td-pro">10.0g</td><td class="td-gra">9.0g</td></tr>
+        <tr><td class="td-name">Parmesano</td><td class="td-cant">20g</td><td class="td-kcal">83</td><td class="td-cho">0.6g</td><td class="td-pro">7.2g</td><td class="td-gra">5.6g</td></tr>
+        <tr><td class="td-name">Salsa Volcán <span class="tag-mayo">SPICY MAYO</span></td><td class="td-cant">10g</td><td class="td-kcal">68</td><td class="td-cho">0.5g</td><td class="td-pro">0.3g</td><td class="td-gra">7.5g</td></tr>
+        <tr><td class="td-name">Salsa Anguila</td><td class="td-cant">8g</td><td class="td-kcal">20</td><td class="td-cho">4.5g</td><td class="td-pro">0.4g</td><td class="td-gra">0.1g</td></tr>
+        <tr class="total-row"><td class="td-name">TOTAL</td><td></td><td class="td-kcal">604</td><td class="td-cho">61.2g</td><td class="td-pro">22.9g</td><td class="td-gra">30.6g</td></tr>
+      </table>
+    </div>
+
+    <!-- 7. SEIJI -->
+    <div class="maki-card">
+      <div class="card-header">
+        <div><div class="num">07 / 07</div><h2>SEIJI</h2></div>
+        <div class="card-kcal-block">
+          <div class="big-kcal">690</div>
+          <div class="big-kcal-label">kcal / tabla</div>
+          <div class="per-uno">Por pieza: <strong>~69 kcal</strong></div>
+        </div>
+      </div>
+      <div class="macro-pills">
+        <div class="macro-pill"><div class="macro-val macro-cho">68.2g</div><div class="macro-label">CHO</div></div>
+        <div class="macro-pill"><div class="macro-val macro-pro">18.5g</div><div class="macro-label">PRO</div></div>
+        <div class="macro-pill"><div class="macro-val macro-gra">40.5g</div><div class="macro-label">GRA</div></div>
+      </div>
+      <table class="ingredients-table">
+        <tr class="table-header"><td>Ingrediente</td><td style="text-align:right">Cant.</td><td style="text-align:right">Kcal</td><td style="text-align:right">CHO</td><td style="text-align:right">PRO</td><td style="text-align:right">GRA</td></tr>
+        <tr><td class="td-name">Shari</td><td class="td-cant">120g</td><td class="td-kcal">156</td><td class="td-cho">34.8g</td><td class="td-pro">3.0g</td><td class="td-gra">0.4g</td></tr>
+        <tr><td class="td-name">Alga Nori</td><td class="td-cant">1 und</td><td class="td-kcal">6</td><td class="td-cho">0.6g</td><td class="td-pro">0.8g</td><td class="td-gra">—</td></tr>
+        <tr><td class="td-name">Palta</td><td class="td-cant">55g</td><td class="td-kcal">88</td><td class="td-cho">4.7g</td><td class="td-pro">1.1g</td><td class="td-gra">8.0g</td></tr>
+        <tr><td class="td-name">Langostino Empanizado <span class="tag-frito">DEEP FRIED</span></td><td class="td-cant">35g</td><td class="td-kcal">160</td><td class="td-cho">10.0g</td><td class="td-pro">10.0g</td><td class="td-gra">9.0g</td></tr>
+        <tr><td class="td-name">Salsa Seiji <span class="tag-mayo">BASE MAYO</span></td><td class="td-cant">60g</td><td class="td-kcal">200</td><td class="td-cho">3.0g</td><td class="td-pro">1.0g</td><td class="td-gra">22.0g</td></tr>
+        <tr><td class="td-name">Harina</td><td class="td-cant">14g</td><td class="td-kcal">50</td><td class="td-cho">10.6g</td><td class="td-pro">1.4g</td><td class="td-gra">0.2g</td></tr>
+        <tr><td class="td-name">Huevo</td><td class="td-cant">7g</td><td class="td-kcal">10</td><td class="td-cho">—</td><td class="td-pro">0.8g</td><td class="td-gra">0.8g</td></tr>
+        <tr><td class="td-name">Salsa Anguila</td><td class="td-cant">8g</td><td class="td-kcal">20</td><td class="td-cho">4.5g</td><td class="td-pro">0.4g</td><td class="td-gra">0.1g</td></tr>
+        <tr><td class="td-name">Togarashi</td><td class="td-cant">0.02g</td><td class="td-kcal">—</td><td class="td-cho">—</td><td class="td-pro">—</td><td class="td-gra">—</td></tr>
+        <tr class="total-row"><td class="td-name">TOTAL</td><td></td><td class="td-kcal">690</td><td class="td-cho">68.2g</td><td class="td-pro">18.5g</td><td class="td-gra">40.5g</td></tr>
+      </table>
+    </div>
+
+  </div><!-- /cards-grid -->
+
+  <!-- FOOTER -->
+  <footer>
+    <p>AJL NUTRICIÓN · REFERENCIA INTERNA · 2026</p>
+    <p>VALORES ESTIMADOS — TABLA = 10 PIEZAS · ½ TABLA ÷ 2</p>
+    <p>v2 — FRITOS CALCULADOS COMO DEEP FRIED · SALSAS CON BASE MAYO CORREGIDAS</p>
+  </footer>
+
+</div>
+</body>
+</html>
