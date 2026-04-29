@@ -1,0 +1,844 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Macronutrientes 2026 — Grab Your Protein</title>
+<meta name="description" content="Tabla nutricional completa de Grab Your Protein 2026. Filtra por categoría, ordena por proteína o calorías y compara macros de cada plato.">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&family=DM+Sans:wght@300;400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --negro: #0a0a0a;
+    --carbon: #111111;
+    --gris-oscuro: #1a1a1a;
+    --gris-medio: #2a2a2a;
+    --gris-borde: #333;
+    --gris-claro: #888;
+    --gris-texto: #b8b8b0;
+    --blanco: #f5f5f0;
+    --dorado: #c9a84c;
+    --dorado-claro: #e8c97e;
+    --dorado-oscuro: #8a6820;
+    --rojo: #d94f3d;
+    --verde: #4caf6b;
+    --azul: #4c8fd9;
+    --naranja: #e07b39;
+    --magenta: #c44e8c;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--negro);
+    color: var(--blanco);
+    font-family: 'DM Sans', sans-serif;
+    min-height: 100vh;
+    padding: 32px 20px 80px;
+    position: relative;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+  body::before {
+    content: '';
+    position: fixed; inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.04'/%3E%3C/svg%3E");
+    pointer-events: none; z-index: 100; opacity: 0.5;
+  }
+  body::after {
+    content: '';
+    position: fixed; inset: 0;
+    background: radial-gradient(ellipse at 20% 0%, rgba(201,168,76,0.08), transparent 50%),
+                radial-gradient(ellipse at 80% 100%, rgba(76,143,217,0.06), transparent 50%);
+    pointer-events: none; z-index: 0;
+  }
+  .container { max-width: 1320px; margin: 0 auto; position: relative; z-index: 1; }
+
+  /* HEADER */
+  header {
+    margin-bottom: 36px;
+    padding-bottom: 28px;
+    border-bottom: 1px solid var(--dorado-oscuro);
+  }
+  .label-top {
+    font-family: 'DM Mono', monospace; font-size: 11px; font-weight: 400;
+    letter-spacing: 0.3em; text-transform: uppercase; color: var(--dorado);
+    opacity: 0.85; margin-bottom: 12px;
+  }
+  h1 {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(48px, 9vw, 112px);
+    letter-spacing: 0.01em; line-height: 0.88;
+    color: var(--blanco);
+    margin-bottom: 6px;
+  }
+  h1 span { color: var(--dorado); display: block; }
+  .header-meta {
+    display: flex; flex-wrap: wrap; gap: 16px 32px;
+    margin-top: 20px;
+    font-family: 'DM Mono', monospace; font-size: 11px;
+    color: var(--gris-claro); letter-spacing: 0.12em;
+  }
+  .header-meta strong { color: var(--dorado-claro); font-weight: 500; }
+  .header-meta .dot { color: var(--dorado-oscuro); }
+
+  /* HIGHLIGHTS BENTO */
+  .highlights {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+    margin-bottom: 28px;
+  }
+  .hl-card {
+    background: linear-gradient(180deg, rgba(201,168,76,0.05), rgba(201,168,76,0.01));
+    border: 1px solid var(--gris-medio);
+    padding: 20px 22px;
+    border-radius: 4px;
+    position: relative;
+    overflow: hidden;
+    transition: border-color .25s, transform .25s;
+  }
+  .hl-card:hover { border-color: var(--dorado-oscuro); transform: translateY(-2px); }
+  .hl-card .hl-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: 0.25em; text-transform: uppercase;
+    color: var(--dorado); margin-bottom: 14px;
+  }
+  .hl-card .hl-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 26px; line-height: 1.05;
+    color: var(--blanco); margin-bottom: 4px;
+  }
+  .hl-card .hl-cat {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; color: var(--gris-claro); letter-spacing: 0.12em;
+    text-transform: uppercase; margin-bottom: 12px;
+  }
+  .hl-card .hl-value {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 38px; color: var(--dorado-claro); line-height: 1;
+  }
+  .hl-card .hl-unit {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; color: var(--gris-claro); margin-left: 4px;
+  }
+
+  /* DISCLAIMER */
+  .disclaimer {
+    background: rgba(217,79,61,0.05);
+    border: 1px solid rgba(217,79,61,0.25);
+    border-left: 3px solid var(--rojo);
+    padding: 14px 18px;
+    margin-bottom: 28px;
+    border-radius: 2px;
+    font-size: 13px;
+    color: var(--gris-texto);
+    line-height: 1.55;
+  }
+  .disclaimer strong { color: var(--blanco); font-weight: 500; }
+
+  /* CONTROLS */
+  .controls {
+    position: sticky; top: 0;
+    background: rgba(10,10,10,0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    margin: 0 -20px 24px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--gris-medio);
+    z-index: 50;
+  }
+  .controls-row {
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    gap: 12px;
+    align-items: center;
+    margin-bottom: 14px;
+  }
+  .search {
+    position: relative;
+  }
+  .search input {
+    width: 100%;
+    background: var(--gris-oscuro);
+    border: 1px solid var(--gris-medio);
+    color: var(--blanco);
+    padding: 12px 16px 12px 42px;
+    border-radius: 3px;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    transition: border-color .2s;
+  }
+  .search input:focus { outline: none; border-color: var(--dorado); }
+  .search input::placeholder { color: var(--gris-claro); }
+  .search svg {
+    position: absolute; left: 14px; top: 50%; transform: translateY(-50%);
+    width: 16px; height: 16px; stroke: var(--gris-claro);
+  }
+  .sort-wrap, .unit-wrap {
+    display: flex; align-items: center; gap: 8px;
+    background: var(--gris-oscuro);
+    border: 1px solid var(--gris-medio);
+    padding: 8px 14px;
+    border-radius: 3px;
+  }
+  .sort-wrap label, .unit-wrap label {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: 0.18em;
+    color: var(--gris-claro); text-transform: uppercase;
+  }
+  .sort-wrap select, .unit-wrap select {
+    background: transparent; color: var(--blanco);
+    border: none; outline: none;
+    font-family: 'DM Sans', sans-serif; font-size: 13px;
+    cursor: pointer;
+    appearance: none;
+    padding-right: 16px;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23c9a84c' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
+    background-repeat: no-repeat;
+    background-position: right center;
+  }
+  .chips {
+    display: flex; gap: 8px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+    scrollbar-width: thin;
+  }
+  .chips::-webkit-scrollbar { height: 4px; }
+  .chips::-webkit-scrollbar-thumb { background: var(--gris-medio); border-radius: 2px; }
+  .chip {
+    flex-shrink: 0;
+    padding: 7px 14px;
+    border: 1px solid var(--gris-medio);
+    background: transparent;
+    color: var(--gris-texto);
+    border-radius: 100px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; letter-spacing: 0.1em;
+    text-transform: uppercase;
+    cursor: pointer;
+    transition: all .2s;
+    white-space: nowrap;
+  }
+  .chip:hover { border-color: var(--dorado-oscuro); color: var(--blanco); }
+  .chip.active {
+    background: var(--dorado);
+    color: var(--negro);
+    border-color: var(--dorado);
+    font-weight: 500;
+  }
+  .chip .count {
+    margin-left: 6px;
+    opacity: 0.6;
+    font-size: 10px;
+  }
+  .chip.active .count { opacity: 0.85; }
+
+  /* RESULT META */
+  .result-meta {
+    display: flex; justify-content: space-between; align-items: baseline;
+    margin-bottom: 18px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px; letter-spacing: 0.15em; text-transform: uppercase;
+    color: var(--gris-claro);
+  }
+  .result-meta strong { color: var(--dorado); }
+
+  /* GRID */
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+    gap: 14px;
+  }
+  .card {
+    background: linear-gradient(180deg, var(--gris-oscuro), var(--carbon));
+    border: 1px solid var(--gris-medio);
+    border-radius: 4px;
+    padding: 20px 22px;
+    transition: border-color .25s, transform .25s;
+    position: relative;
+    overflow: hidden;
+  }
+  .card:hover { border-color: var(--dorado-oscuro); transform: translateY(-2px); }
+  .card::before {
+    content: '';
+    position: absolute; left: 0; top: 0;
+    width: 3px; height: 100%;
+    background: var(--cat-color, var(--dorado));
+    opacity: 0.7;
+  }
+  .card-head {
+    display: flex; align-items: flex-start; justify-content: space-between;
+    margin-bottom: 14px;
+    gap: 10px;
+  }
+  .card-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 24px; line-height: 1.05;
+    color: var(--blanco);
+    letter-spacing: 0.01em;
+  }
+  .card-cat {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; letter-spacing: 0.2em;
+    color: var(--cat-color, var(--dorado));
+    text-transform: uppercase;
+    margin-bottom: 4px;
+    font-weight: 500;
+  }
+  .card-unit {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--gris-claro);
+    background: rgba(255,255,255,0.04);
+    border: 1px solid var(--gris-medio);
+    padding: 3px 8px;
+    border-radius: 100px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .card-primary {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-bottom: 14px;
+    padding: 14px 0;
+    border-top: 1px solid var(--gris-medio);
+    border-bottom: 1px solid var(--gris-medio);
+  }
+  .stat-primary {
+    display: flex; flex-direction: column; gap: 2px;
+  }
+  .stat-primary .lbl {
+    font-family: 'DM Mono', monospace;
+    font-size: 9px; letter-spacing: 0.2em;
+    color: var(--gris-claro); text-transform: uppercase;
+  }
+  .stat-primary .val {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px; line-height: 1;
+    letter-spacing: 0.01em;
+  }
+  .stat-primary .unit {
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--gris-claro); margin-left: 3px;
+  }
+  .stat-primary.kcal .val { color: var(--blanco); }
+  .stat-primary.prot .val { color: var(--dorado-claro); }
+
+  .card-secondary {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .pill {
+    background: rgba(255,255,255,0.025);
+    border: 1px solid var(--gris-medio);
+    border-radius: 3px;
+    padding: 7px 8px;
+    text-align: center;
+  }
+  .pill .pill-lbl {
+    font-family: 'DM Mono', monospace;
+    font-size: 8px; letter-spacing: 0.18em;
+    color: var(--gris-claro); text-transform: uppercase;
+    margin-bottom: 2px;
+  }
+  .pill .pill-val {
+    font-family: 'DM Sans', sans-serif;
+    font-size: 13px; font-weight: 500;
+    color: var(--blanco);
+  }
+  .pill .pill-val .pu { color: var(--gris-claro); font-size: 10px; font-weight: 400; }
+  .pill.grasa .pill-val { color: var(--naranja); }
+  .pill.carb .pill-val { color: var(--azul); }
+  .pill.fib .pill-val { color: var(--verde); }
+
+  .card-footer {
+    display: flex; gap: 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px;
+    color: var(--gris-claro);
+    letter-spacing: 0.05em;
+  }
+  .card-footer .meta-item {
+    display: flex; gap: 4px; align-items: baseline;
+  }
+  .card-footer .meta-item strong {
+    color: var(--gris-texto); font-weight: 500;
+  }
+
+  /* PROTEIN BADGE */
+  .protein-score {
+    position: absolute; top: 14px; right: 14px;
+    width: 32px; height: 32px;
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 13px;
+    border: 1px solid var(--dorado-oscuro);
+    color: var(--dorado-claro);
+    background: rgba(201,168,76,0.08);
+  }
+  .protein-score.elite {
+    background: var(--dorado);
+    color: var(--negro);
+    border-color: var(--dorado);
+    font-weight: 700;
+  }
+
+  /* CATEGORY COLORS */
+  .cat-comidas { --cat-color: var(--dorado-claro); }
+  .cat-postres { --cat-color: var(--magenta); }
+  .cat-helados { --cat-color: var(--azul); }
+  .cat-bebidas { --cat-color: var(--verde); }
+  .cat-snacks  { --cat-color: var(--naranja); }
+
+  /* EMPTY */
+  .empty {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 60px 20px;
+    color: var(--gris-claro);
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.15em;
+    font-size: 12px;
+    text-transform: uppercase;
+  }
+
+  /* FOOTER */
+  footer {
+    margin-top: 60px; padding-top: 28px;
+    border-top: 1px solid var(--gris-medio);
+    font-size: 12px;
+    color: var(--gris-claro);
+    line-height: 1.7;
+  }
+  footer p { margin-bottom: 8px; max-width: 800px; }
+  footer .credit {
+    margin-top: 16px;
+    font-family: 'DM Mono', monospace;
+    font-size: 10px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--dorado);
+  }
+  footer .credit a { color: var(--dorado-claro); text-decoration: none; }
+  footer .credit a:hover { color: var(--blanco); }
+
+  /* MOBILE */
+  @media (max-width: 880px) {
+    .highlights { grid-template-columns: repeat(2, 1fr); }
+    .controls-row { grid-template-columns: 1fr; }
+    .header-meta { font-size: 10px; gap: 10px 20px; }
+  }
+  @media (max-width: 480px) {
+    body { padding: 24px 16px 60px; }
+    .controls { margin: 0 -16px 24px; padding: 14px 16px; }
+    .grid { grid-template-columns: 1fr; }
+    .hl-card .hl-value { font-size: 32px; }
+  }
+</style>
+</head>
+<body>
+  <div class="container">
+
+    <header>
+      <div class="label-top">Macronutrientes 2026 · Ficha Nutricional</div>
+      <h1>Grab Your<br><span>Protein</span></h1>
+      <div class="header-meta">
+        <span><strong id="totalCount">—</strong> productos</span>
+        <span class="dot">|</span>
+        <span><strong>17</strong> categorías</span>
+        <span class="dot">|</span>
+        <span>Valores por <strong>100g / 100ml / unidad</strong> según indicado</span>
+        <span class="dot">|</span>
+        <span>Fuente: <strong>Ficha oficial 2026</strong></span>
+      </div>
+    </header>
+
+    <section class="highlights" id="highlights"></section>
+
+    <div class="disclaimer">
+      <strong>Lectura nutricional.</strong> Los valores son referenciales — calculados sobre los ingredientes declarados por el proveedor. Las raciones reales pueden variar. Para evaluar el impacto real de un plato en tu plan, considera la unidad indicada (100 g, 100 ml o porción/unidad) y multiplica por el peso real servido.
+    </div>
+
+    <div class="controls">
+      <div class="controls-row">
+        <div class="search">
+          <svg viewBox="0 0 24 24" fill="none" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+          <input type="text" id="searchInput" placeholder="Buscar plato (Fitzza, Cesar, Brownie...)">
+        </div>
+        <div class="sort-wrap">
+          <label for="sortSelect">Ordenar</label>
+          <select id="sortSelect">
+            <option value="cat">Categoría</option>
+            <option value="prot-desc">Proteína (mayor)</option>
+            <option value="kcal-asc">Calorías (menor)</option>
+            <option value="kcal-desc">Calorías (mayor)</option>
+            <option value="density-desc">Densidad proteica</option>
+            <option value="fib-desc">Fibra (mayor)</option>
+            <option value="carb-asc">Carbs (menor)</option>
+            <option value="grasa-asc">Grasa (menor)</option>
+            <option value="az-asc">Azúcar (menor)</option>
+            <option value="name">A → Z</option>
+          </select>
+        </div>
+      </div>
+      <div class="chips" id="chips"></div>
+    </div>
+
+    <div class="result-meta">
+      <span><strong id="visibleCount">0</strong> resultados</span>
+      <span id="sortIndicator">— Categoría</span>
+    </div>
+
+    <div class="grid" id="grid"></div>
+
+    <footer>
+      <p><strong style="color:var(--blanco)">Disclaimer oficial.</strong> Los valores nutricionales aquí recogidos se declaran por 100 g o 100 ml de producto (o por unidad cuando se indica). La información se ha obtenido a partir de los datos proporcionados por los proveedores, considerando para el cálculo los valores nutricionales de cada ingrediente en el escandallo; por tanto, han de ser considerados como cantidades orientativas, sujetas a posibles variaciones.</p>
+      <p>Puede suceder que la información de algún producto no esté disponible o que algún establecimiento no disponga de un determinado producto (consultar existencias en el establecimiento).</p>
+      <p class="credit">Recopilado por <a href="https://instagram.com/alejandrojloayza">@alejandrojloayza</a> · Nutrición · <span style="color:var(--gris-claro)">2026</span></p>
+    </footer>
+
+  </div>
+
+<script>
+const DATA = [
+  // CRUNCHY'S (per unidad)
+  { cat: "crunchy", grupo: "comidas", name: "Chipotle", unit: "1 unid.", kcal: 595.9, prot: 51.8, grasa: 24, carb: 42.9, sat: 4.8, az: 6.6, sod: 594, fib: 9.7 },
+  { cat: "crunchy", grupo: "comidas", name: "Italiano", unit: "1 unid.", kcal: 560, prot: 55.1, grasa: 16.3, carb: 32.4, sat: 5.1, az: 2.1, sod: 510.3, fib: 7.0 },
+  { cat: "crunchy", grupo: "comidas", name: "Atunacado", unit: "1 unid.", kcal: 561.1, prot: 45.8, grasa: 22.1, carb: 44, sat: 4.6, az: 7.6, sod: 371.6, fib: 9.7 },
+  { cat: "crunchy", grupo: "comidas", name: "Acevichado", unit: "1 unid.", kcal: 571, prot: 44, grasa: 25, carb: 40, sat: 4.9, az: 3.7, sod: 643, fib: 7.8 },
+
+  // WRAPS
+  { cat: "wraps", grupo: "comidas", name: "Fitzza", unit: "100 g", kcal: 566.8, prot: 66.78, grasa: 23.94, carb: 21, sat: 10.1, az: 7.33, sod: 668.8, fib: 4.2 },
+  { cat: "wraps", grupo: "comidas", name: "Hawaian", unit: "100 g", kcal: 593.7, prot: 67.05, grasa: 24, carb: 27.4, sat: 10.13, az: 11.9, sod: 669.3, fib: 4.9 },
+  { cat: "wraps", grupo: "comidas", name: "Oriental", unit: "100 g", kcal: 458.9, prot: 48.8, grasa: 19.4, carb: 21, sat: 4.45, az: 4.68, sod: 636.3, fib: 7.34 },
+  { cat: "wraps", grupo: "comidas", name: "Mexicano", unit: "100 g", kcal: 663.1, prot: 69.8, grasa: 34.5, carb: 27.4, sat: 12.2, az: 3.41, sod: 717.5, fib: 5.21 },
+  { cat: "wraps", grupo: "comidas", name: "Masakre", unit: "100 g", kcal: 548.41, prot: 50.6, grasa: 29.78, carb: 21, sat: 11.05, az: 2.76, sod: 699.3, fib: 6.11 },
+  { cat: "wraps", grupo: "comidas", name: "Aji de Gallina", unit: "100 g", kcal: 769.7, prot: 66.8, grasa: 47.5, carb: 27.4, sat: 10.3, az: 3, sod: 683.3, fib: 4.58 },
+  { cat: "wraps", grupo: "comidas", name: "Huanca Fit", unit: "100 g", kcal: 593.75, prot: 67, grasa: 24, carb: 21, sat: 10.13, az: 11.9, sod: 669.3, fib: 4.92 },
+
+  // ENSALADAS (incluye 20ml de salsa)
+  { cat: "ensaladas", grupo: "comidas", name: "Cesar", unit: "1 plato (+salsa)", kcal: 650.36, prot: 67, grasa: 22.4, carb: 45.1, sat: 9.1, az: 11.5, sod: 1416, fib: 5.2 },
+  { cat: "ensaladas", grupo: "comidas", name: "Integral", unit: "1 plato (+salsa)", kcal: 958.1, prot: 72.6, grasa: 30, carb: 98.2, sat: 9.12, az: 10.5, sod: 718.83, fib: 11.5 },
+  { cat: "ensaladas", grupo: "comidas", name: "Oriental", unit: "1 plato (+salsa)", kcal: 526.5, prot: 52.8, grasa: 22.2, carb: 28.8, sat: 5, az: 18.2, sod: 646.3, fib: 9.1 },
+  { cat: "ensaladas", grupo: "comidas", name: "Protein Food", unit: "1 plato (+salsa)", kcal: 656.1, prot: 68.6, grasa: 31.6, carb: 24.3, sat: 10.03, az: 15.2, sod: 759.03, fib: 7.9 },
+  { cat: "ensaladas", grupo: "comidas", name: "Protein Lover", unit: "1 plato (+salsa)", kcal: 667.7, prot: 61.2, grasa: 28.3, carb: 41.9, sat: 6.63, az: 13.1, sod: 742.9, fib: 11 },
+
+  // BOWLS
+  { cat: "bowls", grupo: "comidas", name: "Oriental", unit: "1 bowl (+salsa)", kcal: 631.9, prot: 53.87, grasa: 20.59, carb: 57.7, sat: 4.85, az: 7.73, sod: 640.9, fib: 8.4 },
+  { cat: "bowls", grupo: "comidas", name: "Mexican", unit: "1 bowl (+salsa)", kcal: 715.9, prot: 56.22, grasa: 21.94, carb: 73.3, sat: 5.16, az: 8.04, sod: 777.1, fib: 9.5 },
+
+  // BURGUERS & FITWICH
+  { cat: "burguers", grupo: "comidas", name: "Proteinessa", unit: "100 g", kcal: 366, prot: 30.3, grasa: 8.1, carb: 43, sat: 2.1, az: 3.1, sod: 765, fib: 7 },
+  { cat: "burguers", grupo: "comidas", name: "Sanguche Teriyaki", unit: "100 g", kcal: 248.4, prot: 21.1, grasa: 7.2, carb: 24.6, sat: 2.03, az: 4.64, sod: 374, fib: 2.8 },
+  { cat: "burguers", grupo: "comidas", name: "Sanguche Apaltado", unit: "100 g", kcal: 239.7, prot: 22.8, grasa: 10.2, carb: 14.14, sat: 3.20, az: 2.99, sod: 315, fib: 2.41 },
+  { cat: "burguers", grupo: "comidas", name: "Fitwich Signature", unit: "1 unid.", kcal: 608, prot: 47.1, grasa: 27.1, carb: 44.1, sat: 4.0, az: 4.2, sod: 621.8, fib: 4.9 },
+  { cat: "burguers", grupo: "comidas", name: "Fitwich Sweet Classic", unit: "1 unid.", kcal: 648, prot: 47.3, grasa: 28.1, carb: 52.6, sat: 4.1, az: 11.2, sod: 651.8, fib: 5.9 },
+  { cat: "burguers", grupo: "comidas", name: "Fitwich Avocado", unit: "1 unid.", kcal: 691.3, prot: 48.6, grasa: 34.7, carb: 49.1, sat: 5.0, az: 4.8, sod: 626, fib: 8.6 },
+
+  // PASTAS
+  { cat: "pastas", grupo: "comidas", name: "Pesto FIT", unit: "1 plato", kcal: 536.2, prot: 62.7, grasa: 9.8, carb: 49.3, sat: 3.8, az: 13.2, sod: 69.4, fib: 6.4 },
+  { cat: "pastas", grupo: "comidas", name: "Huanca FIT", unit: "1 plato", kcal: 867.6, prot: 68.6, grasa: 22.5, carb: 97.6, sat: 8.3, az: 0.8, sod: 133.5, fib: 11.8 },
+  { cat: "pastas", grupo: "comidas", name: "Quesadilla FIT", unit: "1 unid.", kcal: 258.6, prot: 22.57, grasa: 10.7, carb: 18.01, sat: 5.45, az: 6.11, sod: 238.5, fib: 2.05 },
+
+  // TORTAS
+  { cat: "tortas", grupo: "postres", name: "Protein Food", unit: "100 g", kcal: 169, prot: 14.5, grasa: 4.9, carb: 16.9, sat: 3.7, az: 4.8, sod: 4.2, fib: 2.2 },
+  { cat: "tortas", grupo: "postres", name: "Tiramisú", unit: "100 g", kcal: 224, prot: 12.2, grasa: 10, carb: 21.2, sat: 6.7, az: 7.11, sod: 80.85, fib: 2.56 },
+  { cat: "tortas", grupo: "postres", name: "Trufada", unit: "100 g", kcal: 238.6, prot: 15, grasa: 9.8, carb: 22.6, sat: 7, az: 6.8, sod: 27.7, fib: 2.8 },
+  { cat: "tortas", grupo: "postres", name: "Carrot Cake", unit: "100 g", kcal: 225, prot: 12.2, grasa: 16.6, carb: 6.6, sat: 8.09, az: 4.63, sod: 29.30, fib: 1.28 },
+  { cat: "tortas", grupo: "postres", name: "Cheesecake de Fresa", unit: "100 g", kcal: 184, prot: 16.2, grasa: 8.9, carb: 9.8, sat: 5.7, az: 2.1, sod: 45.5, fib: 0.6 },
+  { cat: "tortas", grupo: "postres", name: "Nicker Pye", unit: "100 g", kcal: 243.4, prot: 19, grasa: 9.1, carb: 15, sat: 8.8, az: 5.2, sod: 57.5, fib: 0.9 },
+  { cat: "tortas", grupo: "postres", name: "Explosión de Chocolate", unit: "100 g", kcal: 326, prot: 13.12, grasa: 17.8, carb: 28.4, sat: 15.4, az: 7.41, sod: 8.07, fib: 3.32 },
+  { cat: "tortas", grupo: "postres", name: "Proreo", unit: "100 g", kcal: 302, prot: 19.75, grasa: 12.9, carb: 26.7, sat: 6.3, az: 16.93, sod: 97.07, fib: 1.86 },
+  { cat: "tortas", grupo: "postres", name: "Pye de Limón", unit: "100 g", kcal: 164, prot: 11.11, grasa: 9.15, carb: 9.5, sat: 7.3, az: 2.19, sod: 25.57, fib: 1.02 },
+  { cat: "tortas", grupo: "postres", name: "Supreme", unit: "100 g", kcal: 206.4, prot: 13.7, grasa: 10, carb: 13.8, sat: 7.5, az: 0.72, sod: 3.88, fib: 2.08 },
+
+  // FUDGE
+  { cat: "fudge", grupo: "postres", name: "Fudge", unit: "20 ml", kcal: 58.7, prot: 5.7, grasa: 1.6, carb: 5.3, sat: 0.7, az: null, sod: null, fib: null },
+
+  // POSTRES
+  { cat: "postres", grupo: "postres", name: "Crepa To Go", unit: "1 plato", kcal: 537, prot: 61.7, grasa: 9, carb: 52.4, sat: 3.3, az: 16.6, sod: 62.7, fib: 7.4 },
+  { cat: "postres", grupo: "postres", name: "Protein Waffles", unit: "1 plato", kcal: 570.1, prot: 63.3, grasa: 10, carb: 56.7, sat: 3.8, az: 17.7, sod: 70.9, fib: 7.9 },
+  { cat: "postres", grupo: "postres", name: "Copa Donuts", unit: "1 plato", kcal: 663.8, prot: 79.4, grasa: 9.4, carb: 65.4, sat: 3.2, az: 24.4, sod: 71.5, fib: 8.09 },
+  { cat: "postres", grupo: "postres", name: "Protein Volcán", unit: "1 plato", kcal: 536.2, prot: 62.7, grasa: 9.8, carb: 49.3, sat: 3.8, az: 13.2, sod: 69.4, fib: 6.4 },
+  { cat: "postres", grupo: "postres", name: "Fit Crepes", unit: "1 plato", kcal: 538, prot: 61.8, grasa: 9, carb: 52.4, sat: 3.3, az: 16.6, sod: 62.7, fib: 7.4 },
+  { cat: "postres", grupo: "postres", name: "Copa Ice Cream", unit: "1 plato", kcal: 344.3, prot: 35.8, grasa: 4.9, carb: 39.2, sat: 2.1, az: 27.7, sod: 59.4, fib: 4.2 },
+  { cat: "postres", grupo: "postres", name: "Super Cookie", unit: "1 plato", kcal: 364.5, prot: 22.3, grasa: 12.4, carb: 40.7, sat: 3.6, az: 1.39, sod: 29.7, fib: 6.2 },
+
+  // TO GO (helados líquidos)
+  { cat: "togo", grupo: "helados", name: "Vainilla", unit: "100 ml", kcal: 66.6, prot: 7, grasa: 1.2, carb: 6.8, sat: 0.6, az: 6.8, sod: 15.5, fib: null },
+  { cat: "togo", grupo: "helados", name: "Chocolate", unit: "100 ml", kcal: 57.8, prot: 7.5, grasa: 1.1, carb: 4.4, sat: 0.6, az: 3.6, sod: 12, fib: 0.2 },
+  { cat: "togo", grupo: "helados", name: "Fresa", unit: "100 ml", kcal: 45.9, prot: 6.8, grasa: 0.6, carb: 3.2, sat: 0.3, az: 2.7, sod: 7.3, fib: 0.1 },
+  { cat: "togo", grupo: "helados", name: "Lúcuma", unit: "100 ml", kcal: 50.8, prot: 6.9, grasa: 0.6, carb: 4.5, sat: 0.3, az: 3.5, sod: 7.1, fib: 0.2 },
+  { cat: "togo", grupo: "helados", name: "Maracuyá", unit: "100 ml", kcal: 50.9, prot: 6.9, grasa: 0.6, carb: 4.3, sat: 0.3, az: 3.2, sod: 9, fib: 0.8 },
+  { cat: "togo", grupo: "helados", name: "Choco & Cookie", unit: "100 ml", kcal: 68.9, prot: 8, grasa: 1.3, carb: 6.3, sat: 0.6, az: 4.3, sod: 12.6, fib: 0.5 },
+  { cat: "togo", grupo: "helados", name: "Cheesecake de Fresa", unit: "100 ml", kcal: 218.3, prot: 26.7, grasa: 6.6, carb: 13, sat: 3.1, az: 9.1, sod: 46.8, fib: 2.0 },
+  { cat: "togo", grupo: "helados", name: "Tres Leches", unit: "100 ml", kcal: 153.4, prot: 15.2, grasa: 4.7, carb: 13.6, sat: 3.3, az: 10.1, sod: 60.9, fib: 0.4 },
+  { cat: "togo", grupo: "helados", name: "Frutos Rojos", unit: "100 ml", kcal: 86.9, prot: 6.9, grasa: 0.6, carb: 4.3, sat: 0.3, az: 3.2, sod: 9, fib: 0.8 },
+  { cat: "togo", grupo: "helados", name: "Pay de Limón", unit: "100 ml", kcal: 126.6, prot: 12.7, grasa: 4.8, carb: 8.1, sat: 3.5, az: 6.8, sod: 64.8, fib: null },
+
+  // SOFT
+  { cat: "soft", grupo: "helados", name: "Soft de Vainilla", unit: "100 ml", kcal: 32.3, prot: 5.1, grasa: 0.2, carb: 2.5, sat: 0.1, az: 2.3, sod: 12.9, fib: null },
+  { cat: "soft", grupo: "helados", name: "Soft de Chocolate", unit: "100 ml", kcal: 40.6, prot: 5.4, grasa: 0.5, carb: 3.6, sat: 0.2, az: 0.2, sod: 2.4, fib: null },
+  { cat: "soft", grupo: "helados", name: "Soft de Lúcuma", unit: "100 ml", kcal: 46.02, prot: 5.5, grasa: 0.51, carb: 4.8, sat: 0.24, az: 2.66, sod: 12.97, fib: 0.6 },
+
+  // SOFTYS
+  { cat: "softys", grupo: "helados", name: "Cheese Cake Fresa", unit: "1 unid.", kcal: 362, prot: 30, grasa: 13, carb: 29.9, sat: 9.36, az: 8.50, sod: 97.93, fib: 2.30 },
+  { cat: "softys", grupo: "helados", name: "Pistacho", unit: "1 unid.", kcal: 399, prot: 25, grasa: 21.9, carb: 24.6, sat: 12.7, az: 4.48, sod: 73.10, fib: 2.00 },
+  { cat: "softys", grupo: "helados", name: "Maracumango", unit: "1 unid.", kcal: 409, prot: 31, grasa: 8.7, carb: 51.4, sat: 6.22, az: 20.24, sod: 101.75, fib: 11.42 },
+  { cat: "softys", grupo: "helados", name: "Choco Brownie", unit: "1 unid.", kcal: 431, prot: 28.27, grasa: 20, carb: 34.5, sat: 15.44, az: 7.04, sod: 74.73, fib: 6.38 },
+  { cat: "softys", grupo: "helados", name: "Cookies & Cream", unit: "1 unid.", kcal: 431, prot: 28.27, grasa: 20, carb: 34.5, sat: 15.44, az: 7.04, sod: 74.73, fib: 6.38 },
+
+  // SHAKES
+  { cat: "shakes", grupo: "bebidas", name: "Strawberry Shake Whey", unit: "100 ml", kcal: 197.2, prot: 27.5, grasa: 1.6, carb: 18.2, sat: 0.3, az: 11.3, sod: 55.7, fib: 1.5 },
+  { cat: "shakes", grupo: "bebidas", name: "Post Workout Whey Vainilla", unit: "100 ml", kcal: 348, prot: 32, grasa: 9.1, carb: 34.5, sat: 1.4, az: 18, sod: 58.5, fib: 3.9 },
+  { cat: "shakes", grupo: "bebidas", name: "Post Workout Whey Chocolate", unit: "100 ml", kcal: 344, prot: 32, grasa: 9.1, carb: 33.5, sat: 1.9, az: 18, sod: 98.5, fib: 3.9 },
+  { cat: "shakes", grupo: "bebidas", name: "Peanuts Shake Whey", unit: "100 ml", kcal: 218.7, prot: 29.7, grasa: 6.3, carb: 10.7, sat: 0.9, az: 5.4, sod: 58.6, fib: 0.9 },
+  { cat: "shakes", grupo: "bebidas", name: "Protein Shake Vainilla Whey", unit: "100 ml", kcal: 120, prot: 23, grasa: 1.5, carb: 3, sat: 0.5, az: 1, sod: 100, fib: 0 },
+
+  // FRAPPES
+  { cat: "frappes", grupo: "bebidas", name: "Frappe Whey", unit: "100 ml", kcal: 198.4, prot: 31.4, grasa: 2.8, carb: 11.8, sat: 0.8, az: 4, sod: 100.2, fib: 1.3 },
+  { cat: "frappes", grupo: "bebidas", name: "Mocca Frappe Whey", unit: "100 ml", kcal: 194.4, prot: 31.4, grasa: 2.8, carb: 10.8, sat: 1.3, az: 4, sod: 100.2, fib: 1.3 },
+  { cat: "frappes", grupo: "bebidas", name: "Lemon Protein Frappe", unit: "100 ml", kcal: 281.6, prot: 22.3, grasa: 17.2, carb: 9.3, sat: 13.5, az: 7.1, sod: 126.5, fib: 0 },
+  { cat: "frappes", grupo: "bebidas", name: "Resse Protein Frappe", unit: "100 ml", kcal: 365.2, prot: 16.8, grasa: 26.8, carb: 14, sat: 3.8, az: 6.4, sod: 114, fib: 4.2 },
+  { cat: "frappes", grupo: "bebidas", name: "Dulce de Leche Frappe", unit: "100 ml", kcal: 331.4, prot: 24.4, grasa: 18.8, carb: 15.9, sat: 14.3, az: 7.1, sod: 127, fib: 2.5 },
+
+  // CUCHAREABLES (per 100g)
+  { cat: "cuchareables", grupo: "postres", name: "Choco Manjar", unit: "100 g (270g · 2.7 porc)", kcal: 177, prot: 18.5, grasa: 5.6, carb: 13.21, sat: 4, az: 1.40, sod: 9.87, fib: 1.98 },
+  { cat: "cuchareables", grupo: "postres", name: "Tres Leches", unit: "100 g (275g · 2.7 porc)", kcal: 163, prot: 17.9, grasa: 5.17, carb: 11.2, sat: 3.8, az: 1.38, sod: 9.5, fib: 1.25 },
+  { cat: "cuchareables", grupo: "postres", name: "Pay de Limón", unit: "100 g (245g · 2.5 porc)", kcal: 147, prot: 17.4, grasa: 3.4, carb: 11.54, sat: 2.3, az: 0.65, sod: 3.72, fib: 1.41 },
+  { cat: "cuchareables", grupo: "postres", name: "Choco Alfajor", unit: "100 g (370g · 3.7 porc)", kcal: 270, prot: 18, grasa: 11.7, carb: 22, sat: 7.2, az: 7.7, sod: 22.08, fib: 0.91 },
+  { cat: "cuchareables", grupo: "postres", name: "Chococrunchy", unit: "100 g (260g · 2.6 porc)", kcal: 214, prot: 12.37, grasa: 7.9, carb: 23.4, sat: 3.63, az: 1.77, sod: 35.87, fib: 3.21 },
+  { cat: "cuchareables", grupo: "postres", name: "Mousse de Maracuyá", unit: "100 g (270g · 2.7 porc)", kcal: 167, prot: 15.14, grasa: 4.26, carb: 17.13, sat: 3.69, az: 1.78, sod: 6.52, fib: 1.36 },
+  { cat: "cuchareables", grupo: "postres", name: "Alfajor de Pistacho", unit: "100 g (290g · 2.9 porc)", kcal: 199, prot: 17.9, grasa: 9.23, carb: 11.26, sat: 3.52, az: 0.28, sod: 32.18, fib: 0.60 },
+  { cat: "cuchareables", grupo: "postres", name: "Carrot Cake", unit: "100 g (380g · 3.8 porc)", kcal: 249, prot: 18.74, grasa: 10.38, carb: 20.23, sat: 5.83, az: 2.65, sod: 34.88, fib: 0.85 },
+
+  // SNACKS
+  { cat: "snacks", grupo: "snacks", name: "Brownie Monster", unit: "1 unid.", kcal: 460, prot: 32, grasa: 19, carb: 49, sat: null, az: null, sod: null, fib: null, note: "Base + crema (sin toppings ni cobertura)" },
+  { cat: "snacks", grupo: "snacks", name: "Brownie Clásico", unit: "100 g", kcal: 150, prot: 12.2, grasa: 6.2, carb: 11.4, sat: 3.3, az: 1.8, sod: 26.5, fib: 1.65 },
+  { cat: "snacks", grupo: "snacks", name: "BI SHEIP Vainilla", unit: "100 g", kcal: 293, prot: 15.2, grasa: 6.4, carb: 43.8, sat: 1, az: 2.9, sod: 16, fib: 6.8 },
+  { cat: "snacks", grupo: "snacks", name: "BI SHEIP Chocolate", unit: "100 g", kcal: 305.5, prot: 13.6, grasa: 6.1, carb: 49.1, sat: 1.15, az: 2.9, sod: 7.1, fib: 7.11 },
+  { cat: "snacks", grupo: "snacks", name: "Alfajor Clásico", unit: "100 g", kcal: 154.1, prot: 9.1, grasa: 8.0, carb: 11.4, sat: 7.2, az: 7.7, sod: 19.7, fib: 0.7 },
+  { cat: "snacks", grupo: "snacks", name: "Alfajor Chocomenta", unit: "100 g", kcal: 159.8, prot: 10, grasa: 8.09, carb: 11.7, sat: 7.2, az: 7.9, sod: 21.6, fib: 0.6 },
+  { cat: "snacks", grupo: "snacks", name: "Alfajor Resse", unit: "100 g", kcal: 222.9, prot: 14.4, grasa: 12.20, carb: 13.91, sat: 7.09, az: 7.7, sod: 26.87, fib: 1.47 },
+  { cat: "snacks", grupo: "snacks", name: "Choky", unit: "100 g", kcal: 296.7, prot: 16.2, grasa: 10.9, carb: 33.2, sat: 8.13, az: 6.3, sod: 37.13, fib: 4.78 },
+  { cat: "snacks", grupo: "snacks", name: "Cookie Pistacho", unit: "1 unid.", kcal: 296, prot: 13.6, grasa: 23.1, carb: 10.8, sat: 6.6, az: 1.6, sod: 45, fib: 3.6 },
+  { cat: "snacks", grupo: "snacks", name: "Cookie Cinamon", unit: "1 unid.", kcal: 301, prot: 14.7, grasa: 21.4, carb: 21.6, sat: 6.2, az: 1.9, sod: null, fib: 4.5 },
+  { cat: "snacks", grupo: "snacks", name: "Cookie Vainilla y Chips", unit: "1 unid.", kcal: 288, prot: 12.8, grasa: 24.3, carb: 6.7, sat: null, az: null, sod: null, fib: null },
+
+  // MOUSSES
+  { cat: "mousses", grupo: "postres", name: "Chocolate y Manjar", unit: "100 g (380-410g)", kcal: 133, prot: 9.40, grasa: 6.54, carb: 9.34, sat: 2.36, az: 3.57, sod: 23.53, fib: 2.02 },
+  { cat: "mousses", grupo: "postres", name: "Chocolate y Pistacho", unit: "100 g (380-410g)", kcal: 122, prot: 8.76, grasa: 5.78, carb: 9.78, sat: 1.81, az: 1.47, sod: 23.17, fib: 1.02 },
+  { cat: "mousses", grupo: "postres", name: "Reese", unit: "100 g (380-410g)", kcal: 160, prot: 11.07, grasa: 8.90, carb: 9.02, sat: 2.01, az: 2.44, sod: 24.68, fib: 2.45 },
+  { cat: "mousses", grupo: "postres", name: "Mocaccino", unit: "100 g (380-410g)", kcal: 120, prot: 9.28, grasa: 5.75, carb: 7.99, sat: 1.57, az: 2.44, sod: 23.61, fib: 1.91 },
+];
+
+const CATEGORIES = [
+  { id: "all",          label: "Todos",       grupo: null },
+  { id: "crunchy",      label: "Crunchy's",   grupo: "comidas" },
+  { id: "wraps",        label: "Wraps",       grupo: "comidas" },
+  { id: "ensaladas",    label: "Ensaladas",   grupo: "comidas" },
+  { id: "bowls",        label: "Bowls",       grupo: "comidas" },
+  { id: "burguers",     label: "Burguers & Fitwich", grupo: "comidas" },
+  { id: "pastas",       label: "Pastas",      grupo: "comidas" },
+  { id: "tortas",       label: "Tortas",      grupo: "postres" },
+  { id: "postres",      label: "Postres",     grupo: "postres" },
+  { id: "fudge",        label: "Fudge",       grupo: "postres" },
+  { id: "cuchareables", label: "Cuchareables", grupo: "postres" },
+  { id: "mousses",      label: "Mousses",     grupo: "postres" },
+  { id: "togo",         label: "To Go",       grupo: "helados" },
+  { id: "soft",         label: "Soft",        grupo: "helados" },
+  { id: "softys",       label: "Softys",      grupo: "helados" },
+  { id: "shakes",       label: "Shakes",      grupo: "bebidas" },
+  { id: "frappes",      label: "Frappes",     grupo: "bebidas" },
+  { id: "snacks",       label: "Snacks",      grupo: "snacks" },
+];
+
+const SORT_LABELS = {
+  "cat":          "Categoría",
+  "prot-desc":    "Proteína (mayor)",
+  "kcal-asc":     "Calorías (menor)",
+  "kcal-desc":    "Calorías (mayor)",
+  "density-desc": "Densidad proteica",
+  "fib-desc":     "Fibra (mayor)",
+  "carb-asc":     "Carbs (menor)",
+  "grasa-asc":    "Grasa (menor)",
+  "az-asc":       "Azúcar (menor)",
+  "name":         "A → Z",
+};
+
+const fmt = (v, suf="g") => v == null ? "—" : `${(+v).toLocaleString("es-PE", { maximumFractionDigits: 1 })}${suf ? `<span class="pu">${suf}</span>` : ""}`;
+const fmtKcal = (v) => v == null ? "—" : Math.round(v).toLocaleString("es-PE");
+
+function density(it) {
+  if (!it.kcal || !it.prot) return 0;
+  return (it.prot / it.kcal) * 100;
+}
+
+function buildHighlights() {
+  // Filter only items per unit/plato (comparable absolute values)
+  const dishes = DATA.filter(d => /unid\.|plato|bowl/i.test(d.unit));
+  const high = [];
+  // Mayor proteína (de comidas-platos)
+  const mostProt = [...dishes].sort((a,b) => b.prot - a.prot)[0];
+  high.push({ label: "Más Proteína", name: mostProt.name, cat: catLabel(mostProt.cat), value: mostProt.prot, unit: "g prot." });
+  // Menor caloría (con prot >= 20g) entre platos
+  const lowCalHighProt = [...dishes].filter(d => d.prot >= 20).sort((a,b) => a.kcal - b.kcal)[0];
+  high.push({ label: "Menos Kcal · alta prot.", name: lowCalHighProt.name, cat: catLabel(lowCalHighProt.cat), value: lowCalHighProt.kcal, unit: "kcal" });
+  // Mayor fibra
+  const mostFib = [...DATA].filter(d => d.fib != null).sort((a,b) => b.fib - a.fib)[0];
+  high.push({ label: "Más Fibra", name: mostFib.name, cat: catLabel(mostFib.cat), value: mostFib.fib, unit: "g fibra" });
+  // Mejor densidad proteica (g prot / 100 kcal)
+  const bestDensity = [...DATA].sort((a,b) => density(b) - density(a))[0];
+  high.push({ label: "Mejor densidad proteica", name: bestDensity.name, cat: catLabel(bestDensity.cat), value: density(bestDensity), unit: "g prot / 100 kcal" });
+  return high;
+}
+
+function catLabel(id) {
+  const c = CATEGORIES.find(c => c.id === id);
+  return c ? c.label : id;
+}
+
+function renderHighlights() {
+  const wrap = document.getElementById("highlights");
+  const items = buildHighlights();
+  wrap.innerHTML = items.map(h => `
+    <div class="hl-card">
+      <div class="hl-label">${h.label}</div>
+      <div class="hl-name">${h.name}</div>
+      <div class="hl-cat">${h.cat}</div>
+      <div class="hl-value">${(+h.value).toLocaleString("es-PE", { maximumFractionDigits: 1 })}<span class="hl-unit">${h.unit}</span></div>
+    </div>
+  `).join("");
+}
+
+function renderChips(activeId, counts) {
+  const wrap = document.getElementById("chips");
+  wrap.innerHTML = CATEGORIES.map(c => {
+    const count = c.id === "all" ? DATA.length : (counts[c.id] || 0);
+    return `<button class="chip ${c.id === activeId ? "active" : ""}" data-cat="${c.id}">${c.label}<span class="count">${count}</span></button>`;
+  }).join("");
+  wrap.querySelectorAll(".chip").forEach(btn => {
+    btn.addEventListener("click", () => {
+      state.cat = btn.dataset.cat;
+      render();
+    });
+  });
+}
+
+function proteinScore(item) {
+  // Density (g prot / 100 kcal). Above 20 = elite, above 10 = good.
+  const d = density(item);
+  if (d >= 20) return { val: Math.round(d), elite: true };
+  if (d >= 10) return { val: Math.round(d), elite: false };
+  return null;
+}
+
+function renderCard(it) {
+  const score = proteinScore(it);
+  return `
+    <article class="card cat-${it.grupo}">
+      <div class="card-head">
+        <div>
+          <div class="card-cat">${catLabel(it.cat)}</div>
+          <h3 class="card-name">${it.name}</h3>
+        </div>
+        <span class="card-unit">${it.unit}</span>
+      </div>
+      ${score ? `<div class="protein-score ${score.elite ? "elite" : ""}" title="Densidad proteica: ${score.val}g prot / 100 kcal">${score.val}</div>` : ""}
+      <div class="card-primary">
+        <div class="stat-primary kcal">
+          <span class="lbl">Kcal</span>
+          <span class="val">${fmtKcal(it.kcal)}<span class="unit">kcal</span></span>
+        </div>
+        <div class="stat-primary prot">
+          <span class="lbl">Proteína</span>
+          <span class="val">${it.prot != null ? (+it.prot).toLocaleString("es-PE", { maximumFractionDigits: 1 }) : "—"}<span class="unit">g</span></span>
+        </div>
+      </div>
+      <div class="card-secondary">
+        <div class="pill grasa">
+          <div class="pill-lbl">Grasa</div>
+          <div class="pill-val">${fmt(it.grasa)}</div>
+        </div>
+        <div class="pill carb">
+          <div class="pill-lbl">Carbs</div>
+          <div class="pill-val">${fmt(it.carb)}</div>
+        </div>
+        <div class="pill fib">
+          <div class="pill-lbl">Fibra</div>
+          <div class="pill-val">${fmt(it.fib)}</div>
+        </div>
+      </div>
+      <div class="card-footer">
+        <span class="meta-item"><strong>SAT</strong> ${fmt(it.sat)}</span>
+        <span class="meta-item"><strong>AZ</strong> ${fmt(it.az)}</span>
+        <span class="meta-item"><strong>SOD</strong> ${fmt(it.sod, "mg")}</span>
+      </div>
+      ${it.note ? `<div style="margin-top:10px;font-size:11px;color:var(--gris-claro);font-style:italic">${it.note}</div>` : ""}
+    </article>
+  `;
+}
+
+const state = {
+  cat: "all",
+  q: "",
+  sort: "cat",
+};
+
+function render() {
+  const q = state.q.trim().toLowerCase();
+  let items = DATA.filter(it => {
+    if (state.cat !== "all" && it.cat !== state.cat) return false;
+    if (!q) return true;
+    return it.name.toLowerCase().includes(q) || catLabel(it.cat).toLowerCase().includes(q);
+  });
+
+  // sort
+  switch (state.sort) {
+    case "prot-desc":    items.sort((a,b) => b.prot - a.prot); break;
+    case "kcal-asc":     items.sort((a,b) => a.kcal - b.kcal); break;
+    case "kcal-desc":    items.sort((a,b) => b.kcal - a.kcal); break;
+    case "density-desc": items.sort((a,b) => density(b) - density(a)); break;
+    case "fib-desc":     items.sort((a,b) => (b.fib ?? -1) - (a.fib ?? -1)); break;
+    case "carb-asc":     items.sort((a,b) => (a.carb ?? Infinity) - (b.carb ?? Infinity)); break;
+    case "grasa-asc":    items.sort((a,b) => (a.grasa ?? Infinity) - (b.grasa ?? Infinity)); break;
+    case "az-asc":       items.sort((a,b) => (a.az ?? Infinity) - (b.az ?? Infinity)); break;
+    case "name":         items.sort((a,b) => a.name.localeCompare(b.name, "es")); break;
+    default: {
+      // cat order
+      const order = CATEGORIES.map(c => c.id);
+      items.sort((a,b) => order.indexOf(a.cat) - order.indexOf(b.cat));
+    }
+  }
+
+  // counts for chips
+  const counts = {};
+  DATA.forEach(it => {
+    counts[it.cat] = (counts[it.cat] || 0) + 1;
+  });
+
+  renderChips(state.cat, counts);
+  document.getElementById("grid").innerHTML = items.length
+    ? items.map(renderCard).join("")
+    : `<div class="empty">Sin resultados — prueba con otra búsqueda</div>`;
+  document.getElementById("visibleCount").textContent = items.length;
+  document.getElementById("sortIndicator").textContent = "— " + SORT_LABELS[state.sort];
+  document.getElementById("totalCount").textContent = DATA.length;
+}
+
+document.getElementById("searchInput").addEventListener("input", e => {
+  state.q = e.target.value;
+  render();
+});
+document.getElementById("sortSelect").addEventListener("change", e => {
+  state.sort = e.target.value;
+  render();
+});
+
+renderHighlights();
+render();
+</script>
+</body>
+</html>
