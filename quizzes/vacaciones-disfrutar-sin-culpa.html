@@ -1,0 +1,822 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Quiz · Disfrutar sin culpa</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Montserrat:wght@600;700;800;900&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --black:#0A0A0A;
+    --white:#FFFFFF;
+    --gray-50:#FAFAFA;
+    --gray-100:#F4F4F4;
+    --gray-200:#E8E8E8;
+    --gray-400:#9A9A9A;
+    --gray-600:#525252;
+    --gold:#D4A843;
+    --gold-light:#E8C46B;
+    --gold-dark:#A8842F;
+    --gold-soft:rgba(212,168,67,0.08);
+    --gold-glow:rgba(212,168,67,0.25);
+    --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+    --shadow-md:0 8px 24px rgba(0,0,0,.06);
+    --shadow-lg:0 24px 48px rgba(0,0,0,.10);
+    --shadow-gold:0 12px 40px rgba(212,168,67,.22);
+    --ease:cubic-bezier(.22,1,.36,1);
+  }
+
+  *{box-sizing:border-box;margin:0;padding:0}
+  html,body{height:100%}
+  body{
+    font-family:'Inter',system-ui,-apple-system,sans-serif;
+    background:var(--white);
+    color:var(--black);
+    -webkit-font-smoothing:antialiased;
+    -moz-osx-font-smoothing:grayscale;
+    overflow:hidden;
+    line-height:1.5;
+  }
+
+  /* Decorative gold gradient blobs */
+  .blob{
+    position:fixed;
+    border-radius:50%;
+    filter:blur(80px);
+    opacity:.55;
+    pointer-events:none;
+    z-index:0;
+    transition:opacity .8s var(--ease);
+  }
+  .blob-1{
+    width:520px;height:520px;
+    background:radial-gradient(circle, rgba(212,168,67,.30), rgba(232,196,107,.05) 70%);
+    top:-180px;right:-180px;
+    animation:floatA 18s ease-in-out infinite;
+  }
+  .blob-2{
+    width:420px;height:420px;
+    background:radial-gradient(circle, rgba(212,168,67,.18), rgba(212,168,67,0) 70%);
+    bottom:-160px;left:-140px;
+    animation:floatB 22s ease-in-out infinite;
+  }
+  @keyframes floatA{
+    0%,100%{transform:translate(0,0) scale(1)}
+    50%{transform:translate(-30px,40px) scale(1.06)}
+  }
+  @keyframes floatB{
+    0%,100%{transform:translate(0,0) scale(1)}
+    50%{transform:translate(40px,-30px) scale(.95)}
+  }
+
+  /* Layout */
+  .stage{
+    position:relative;
+    z-index:1;
+    height:100vh;
+    display:flex;
+    flex-direction:column;
+    padding:32px 48px 40px;
+  }
+
+  /* Top bar: brand + progress */
+  .topbar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:32px;
+    margin-bottom:24px;
+  }
+  .brand{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    font-family:'Montserrat',sans-serif;
+    font-weight:800;
+    font-size:13px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    color:var(--black);
+  }
+  .brand-dot{
+    width:8px;height:8px;border-radius:50%;
+    background:linear-gradient(135deg,var(--gold-light),var(--gold-dark));
+    box-shadow:0 0 0 4px var(--gold-soft);
+  }
+  .progress{
+    display:flex;
+    align-items:center;
+    gap:10px;
+    flex:1;
+    max-width:520px;
+  }
+  .progress-track{
+    flex:1;
+    height:3px;
+    background:var(--gray-200);
+    border-radius:99px;
+    overflow:hidden;
+    position:relative;
+  }
+  .progress-fill{
+    position:absolute;inset:0;
+    background:linear-gradient(90deg,var(--gold-dark),var(--gold-light),var(--gold));
+    border-radius:99px;
+    transform:translateX(-100%);
+    transition:transform .8s var(--ease);
+  }
+  .progress-text{
+    font-family:'Montserrat',sans-serif;
+    font-weight:700;
+    font-size:12px;
+    letter-spacing:.12em;
+    color:var(--gray-600);
+    min-width:48px;
+    text-align:right;
+  }
+  .progress-text strong{color:var(--black)}
+
+  /* Main canvas */
+  .canvas{
+    flex:1;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    position:relative;
+  }
+  .screen{
+    width:100%;
+    max-width:980px;
+    margin:0 auto;
+    opacity:0;
+    transform:translateY(24px);
+    pointer-events:none;
+    position:absolute;
+    inset:0;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    transition:opacity .6s var(--ease), transform .6s var(--ease);
+  }
+  .screen.active{
+    opacity:1;
+    transform:translateY(0);
+    pointer-events:auto;
+    position:relative;
+  }
+
+  /* Welcome */
+  .welcome{text-align:center;padding:0 24px}
+  .welcome .eyebrow{
+    font-family:'Montserrat',sans-serif;
+    font-weight:700;
+    font-size:13px;
+    letter-spacing:.32em;
+    text-transform:uppercase;
+    color:var(--gold-dark);
+    margin-bottom:24px;
+    display:inline-flex;
+    align-items:center;
+    gap:12px;
+  }
+  .welcome .eyebrow::before,
+  .welcome .eyebrow::after{
+    content:"";
+    width:32px;height:1px;
+    background:linear-gradient(90deg,transparent,var(--gold),transparent);
+  }
+  .welcome h1{
+    font-family:'Montserrat',sans-serif;
+    font-weight:800;
+    font-size:clamp(40px,5.6vw,76px);
+    line-height:1.04;
+    letter-spacing:-0.02em;
+    margin-bottom:24px;
+  }
+  .welcome h1 em{
+    font-style:normal;
+    background:linear-gradient(135deg,var(--gold-dark) 0%,var(--gold-light) 50%,var(--gold) 100%);
+    -webkit-background-clip:text;
+    background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+  .welcome p{
+    font-size:clamp(16px,1.5vw,20px);
+    color:var(--gray-600);
+    max-width:620px;
+    margin:0 auto 48px;
+    line-height:1.6;
+  }
+
+  /* Question */
+  .q-meta{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    margin-bottom:20px;
+  }
+  .q-num{
+    font-family:'Montserrat',sans-serif;
+    font-weight:800;
+    font-size:14px;
+    letter-spacing:.18em;
+    color:var(--gold-dark);
+    text-transform:uppercase;
+  }
+  .q-divider{
+    flex:0 0 28px;
+    height:1px;
+    background:var(--gray-200);
+  }
+  .q-tag{
+    font-family:'Inter',sans-serif;
+    font-weight:500;
+    font-size:13px;
+    color:var(--gray-400);
+    letter-spacing:.02em;
+  }
+
+  .q-text{
+    font-family:'Montserrat',sans-serif;
+    font-weight:700;
+    font-size:clamp(26px,3.2vw,42px);
+    line-height:1.18;
+    letter-spacing:-0.015em;
+    color:var(--black);
+    margin-bottom:36px;
+    max-width:880px;
+  }
+
+  /* Options */
+  .options{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:14px;
+  }
+  .option{
+    --border:var(--gray-200);
+    --bg:var(--white);
+    --fg:var(--black);
+    cursor:pointer;
+    background:var(--bg);
+    border:1.5px solid var(--border);
+    border-radius:18px;
+    padding:22px 24px;
+    display:flex;
+    align-items:center;
+    gap:18px;
+    text-align:left;
+    font-family:inherit;
+    color:var(--fg);
+    width:100%;
+    transition:transform .35s var(--ease), border-color .25s var(--ease), background .25s var(--ease), box-shadow .35s var(--ease);
+    position:relative;
+    overflow:hidden;
+  }
+  .option:hover:not(.locked){
+    border-color:var(--gold);
+    transform:translateY(-2px);
+    box-shadow:var(--shadow-md);
+  }
+  .option:focus-visible{
+    outline:none;
+    border-color:var(--gold);
+    box-shadow:0 0 0 4px var(--gold-soft);
+  }
+  .option-letter{
+    flex:0 0 auto;
+    width:42px;height:42px;
+    border-radius:50%;
+    background:var(--gray-100);
+    color:var(--gray-600);
+    display:grid;place-items:center;
+    font-family:'Montserrat',sans-serif;
+    font-weight:800;
+    font-size:15px;
+    letter-spacing:0;
+    transition:background .25s var(--ease), color .25s var(--ease), transform .25s var(--ease);
+  }
+  .option-text{
+    flex:1;
+    font-size:clamp(15px,1.25vw,18px);
+    font-weight:500;
+    line-height:1.45;
+    color:var(--black);
+  }
+  .option-mark{
+    flex:0 0 auto;
+    width:24px;height:24px;
+    opacity:0;
+    transform:scale(.6);
+    transition:opacity .3s var(--ease), transform .3s var(--ease);
+  }
+
+  /* States */
+  .option.correct{
+    --border:var(--gold);
+    background:linear-gradient(135deg, rgba(212,168,67,.10), rgba(212,168,67,.04));
+    box-shadow:var(--shadow-gold);
+  }
+  .option.correct .option-letter{
+    background:linear-gradient(135deg,var(--gold-dark),var(--gold-light));
+    color:var(--white);
+  }
+  .option.correct .option-mark{opacity:1;transform:scale(1);color:var(--gold-dark)}
+
+  .option.wrong{
+    --border:var(--gray-200);
+    background:var(--gray-50);
+    color:var(--gray-400);
+  }
+  .option.wrong .option-letter{background:var(--gray-100);color:var(--gray-400)}
+  .option.wrong .option-text{color:var(--gray-400)}
+
+  .option.locked{cursor:default}
+
+  /* Reveal panel */
+  .reveal{
+    margin-top:24px;
+    padding:22px 26px;
+    background:var(--black);
+    color:var(--white);
+    border-radius:18px;
+    display:flex;
+    align-items:flex-start;
+    gap:18px;
+    opacity:0;
+    transform:translateY(12px);
+    transition:opacity .5s var(--ease) .1s, transform .5s var(--ease) .1s;
+    position:relative;
+    overflow:hidden;
+  }
+  .reveal::before{
+    content:"";
+    position:absolute;
+    top:0;left:0;
+    width:4px;height:100%;
+    background:linear-gradient(180deg,var(--gold-light),var(--gold-dark));
+  }
+  .reveal.show{opacity:1;transform:translateY(0)}
+  .reveal-icon{
+    flex:0 0 auto;
+    width:32px;height:32px;
+    border-radius:50%;
+    background:linear-gradient(135deg,var(--gold-dark),var(--gold-light));
+    display:grid;place-items:center;
+    color:var(--black);
+  }
+  .reveal-body{flex:1;padding-top:2px}
+  .reveal-label{
+    font-family:'Montserrat',sans-serif;
+    font-weight:800;
+    font-size:11px;
+    letter-spacing:.24em;
+    text-transform:uppercase;
+    color:var(--gold-light);
+    margin-bottom:6px;
+  }
+  .reveal-text{
+    font-size:clamp(15px,1.2vw,17px);
+    line-height:1.55;
+    color:var(--white);
+    font-weight:400;
+  }
+
+  /* Bottom bar */
+  .bottombar{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    margin-top:28px;
+    gap:16px;
+  }
+  .hint{
+    font-family:'Inter',sans-serif;
+    font-size:13px;
+    color:var(--gray-400);
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .kbd{
+    font-family:'Montserrat',sans-serif;
+    font-weight:700;
+    font-size:11px;
+    letter-spacing:.06em;
+    padding:4px 8px;
+    border-radius:6px;
+    background:var(--gray-100);
+    color:var(--gray-600);
+    border:1px solid var(--gray-200);
+  }
+
+  /* Buttons */
+  .btn{
+    cursor:pointer;
+    font-family:'Montserrat',sans-serif;
+    font-weight:700;
+    font-size:14px;
+    letter-spacing:.08em;
+    text-transform:uppercase;
+    padding:16px 32px;
+    border-radius:99px;
+    border:none;
+    display:inline-flex;
+    align-items:center;
+    gap:12px;
+    transition:transform .25s var(--ease), box-shadow .25s var(--ease), background .25s var(--ease), opacity .25s var(--ease);
+  }
+  .btn-primary{
+    background:var(--black);
+    color:var(--white);
+    box-shadow:var(--shadow-md);
+  }
+  .btn-primary:hover{
+    transform:translateY(-2px);
+    box-shadow:var(--shadow-lg);
+    background:#1a1a1a;
+  }
+  .btn-primary svg{transition:transform .25s var(--ease)}
+  .btn-primary:hover svg{transform:translateX(4px)}
+  .btn-primary:focus-visible{outline:none;box-shadow:0 0 0 4px var(--gold-soft), var(--shadow-md)}
+
+  .btn-ghost{
+    background:transparent;
+    color:var(--gray-600);
+    border:1.5px solid var(--gray-200);
+    padding:14px 24px;
+  }
+  .btn-ghost:hover{border-color:var(--black);color:var(--black)}
+
+  .btn[disabled]{opacity:0;pointer-events:none}
+  .btn.show{opacity:1;pointer-events:auto}
+
+  /* Closing screen */
+  .closing{text-align:center;padding:0 24px}
+  .closing .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:10px;
+    padding:10px 18px;
+    border-radius:99px;
+    background:var(--gold-soft);
+    color:var(--gold-dark);
+    font-family:'Montserrat',sans-serif;
+    font-weight:700;
+    font-size:12px;
+    letter-spacing:.18em;
+    text-transform:uppercase;
+    margin-bottom:28px;
+  }
+  .closing h2{
+    font-family:'Montserrat',sans-serif;
+    font-weight:800;
+    font-size:clamp(34px,4.5vw,60px);
+    line-height:1.08;
+    letter-spacing:-0.02em;
+    margin-bottom:20px;
+  }
+  .closing h2 em{
+    font-style:normal;
+    background:linear-gradient(135deg,var(--gold-dark),var(--gold-light));
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+  }
+  .closing p{
+    font-size:clamp(16px,1.4vw,19px);
+    color:var(--gray-600);
+    max-width:640px;
+    margin:0 auto 40px;
+    line-height:1.6;
+  }
+  .pillars{
+    display:grid;
+    grid-template-columns:repeat(3,1fr);
+    gap:16px;
+    max-width:760px;
+    margin:0 auto 40px;
+  }
+  .pillar{
+    padding:24px 20px;
+    border:1.5px solid var(--gray-200);
+    border-radius:18px;
+    text-align:center;
+    transition:border-color .3s var(--ease), transform .3s var(--ease);
+  }
+  .pillar:hover{border-color:var(--gold);transform:translateY(-3px)}
+  .pillar-num{
+    font-family:'Montserrat',sans-serif;
+    font-weight:900;
+    font-size:32px;
+    background:linear-gradient(135deg,var(--gold-dark),var(--gold-light));
+    -webkit-background-clip:text;background-clip:text;
+    -webkit-text-fill-color:transparent;
+    margin-bottom:8px;
+    line-height:1;
+  }
+  .pillar-text{
+    font-size:14px;
+    color:var(--gray-600);
+    font-weight:500;
+    line-height:1.4;
+  }
+
+  /* Responsive */
+  @media (max-width:780px){
+    .stage{padding:20px 22px 28px}
+    .options{grid-template-columns:1fr}
+    .topbar{gap:16px;flex-wrap:wrap}
+    .progress{order:3;flex-basis:100%}
+    .bottombar{flex-direction:column;align-items:stretch}
+    .hint{justify-content:center}
+    .pillars{grid-template-columns:1fr}
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{
+      animation-duration:.01ms !important;
+      transition-duration:.01ms !important;
+    }
+    .blob{display:none}
+  }
+</style>
+</head>
+<body>
+
+<div class="blob blob-1"></div>
+<div class="blob blob-2"></div>
+
+<main class="stage" role="main">
+
+  <header class="topbar">
+    <div class="brand">
+      <span class="brand-dot"></span>
+      <span>AJL · Nutrición</span>
+    </div>
+    <div class="progress" aria-hidden="true">
+      <div class="progress-track">
+        <div class="progress-fill" id="progressFill"></div>
+      </div>
+      <div class="progress-text"><strong id="progressNow">0</strong> / <span id="progressTotal">5</span></div>
+    </div>
+  </header>
+
+  <section class="canvas" id="canvas">
+    <!-- Screens injected by JS -->
+  </section>
+
+</main>
+
+<script>
+  const QUIZ = [
+    {
+      tag: "Llegando al hotel",
+      text: "Llegas al hotel con mucha hambre y en una hora sales a cenar. ¿Qué tendría más sentido?",
+      options: [
+        "No comer nada para “guardarte”",
+        "Comer algo pequeño para llegar con más calma",
+        "Pedir delivery completo antes de salir",
+        "Tomarte solo café"
+      ],
+      correct: 1,
+      idea: "Llegar con hambre extrema suele hacer más difícil decidir con calma."
+    },
+    {
+      tag: "Almuerzo abundante",
+      text: "Estás de viaje y hoy comiste más de lo normal en el almuerzo. ¿Qué tendría más sentido hacer en la noche?",
+      options: [
+        "Saltarte la cena",
+        "Restringirte para compensar",
+        "Comer normal, sin irte al extremo",
+        "Hacer ejercicio extra para “borrar” el almuerzo"
+      ],
+      correct: 2,
+      idea: "No hace falta compensar con extremos."
+    },
+    {
+      tag: "Vacaciones · contexto",
+      text: "¿Qué suele cambiar más cuando uno está de vacaciones?",
+      options: [
+        "Solo la comida",
+        "Solo la fuerza de voluntad",
+        "Horarios, rutina, salidas y contexto",
+        "Nada, todo depende de disciplina"
+      ],
+      correct: 2,
+      idea: "El contexto cambia, y por eso las decisiones también."
+    },
+    {
+      tag: "Mentalidad",
+      text: "Cuando uno entra a unas vacaciones con la idea de “ya fue, después retomo”, ¿qué suele pasar más?",
+      options: [
+        "Se decide con más calma",
+        "Se vuelve más fácil encontrar equilibrio",
+        "Es más probable comer en automático o irse al extremo",
+        "No cambia nada"
+      ],
+      correct: 2,
+      idea: "El descontrol muchas veces empieza en la lógica mental, no en la comida."
+    },
+    {
+      tag: "Punto medio",
+      text: "¿Qué frase se alinea mejor con disfrutar sin culpa ni descontrol?",
+      options: [
+        "“Tengo que aprovechar y comer todo”",
+        "“Si ya comí algo fuera, se arruinó el día”",
+        "“Puedo disfrutar sin necesidad de irme al extremo”",
+        "“Para hacerlo bien, tendría que controlarlo todo”"
+      ],
+      correct: 2,
+      idea: "El punto medio sí existe."
+    }
+  ];
+
+  const LETTERS = ["A","B","C","D"];
+  const canvas = document.getElementById("canvas");
+  const progressFill = document.getElementById("progressFill");
+  const progressNow = document.getElementById("progressNow");
+  const progressTotal = document.getElementById("progressTotal");
+  progressTotal.textContent = QUIZ.length;
+
+  let state = { index: -1, answered: false };
+
+  // SVG Icons
+  const ICONS = {
+    arrow: '<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>',
+    check: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>',
+    spark: '<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v4M12 18v4M4.93 4.93l2.83 2.83M16.24 16.24l2.83 2.83M2 12h4M18 12h4M4.93 19.07l2.83-2.83M16.24 7.76l2.83-2.83"/></svg>',
+    refresh: '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>'
+  };
+
+  function render() {
+    if (state.index === -1) renderWelcome();
+    else if (state.index < QUIZ.length) renderQuestion(state.index);
+    else renderClosing();
+    updateProgress();
+  }
+
+  function updateProgress() {
+    const total = QUIZ.length;
+    const done = Math.max(0, state.index === -1 ? 0 : Math.min(state.index + (state.answered?1:0), total));
+    const pct = (done / total) * 100;
+    progressFill.style.transform = `translateX(${pct - 100}%)`;
+    progressNow.textContent = done;
+  }
+
+  function mountScreen(html) {
+    const old = canvas.querySelector('.screen');
+    const next = document.createElement('div');
+    next.className = 'screen';
+    next.innerHTML = html;
+    canvas.appendChild(next);
+    requestAnimationFrame(() => {
+      if (old) {
+        old.classList.remove('active');
+        setTimeout(() => old.remove(), 600);
+      }
+      requestAnimationFrame(() => next.classList.add('active'));
+    });
+    return next;
+  }
+
+  function renderWelcome() {
+    const el = mountScreen(`
+      <div class="welcome">
+        <div class="eyebrow">Charla nutricional</div>
+        <h1>Disfrutar <em>sin culpa</em><br/>ni descontrol</h1>
+        <p>Cinco preguntas para revisar juntos cómo decidimos en los momentos donde el contexto cambia: viajes, comidas fuera, vacaciones.</p>
+        <button class="btn btn-primary show" id="startBtn" autofocus>
+          Empezar el quiz ${ICONS.arrow}
+        </button>
+      </div>
+    `);
+    document.getElementById('startBtn').addEventListener('click', next);
+  }
+
+  function renderQuestion(i) {
+    const q = QUIZ[i];
+    state.answered = false;
+    const optsHtml = q.options.map((opt, idx) => `
+      <button class="option" data-idx="${idx}" type="button">
+        <span class="option-letter">${LETTERS[idx]}</span>
+        <span class="option-text">${opt}</span>
+        <span class="option-mark">${ICONS.check}</span>
+      </button>
+    `).join('');
+
+    const el = mountScreen(`
+      <div class="question">
+        <div class="q-meta">
+          <span class="q-num">Pregunta ${String(i+1).padStart(2,'0')}</span>
+          <span class="q-divider"></span>
+          <span class="q-tag">${q.tag}</span>
+        </div>
+        <h2 class="q-text">${q.text}</h2>
+        <div class="options" role="radiogroup">${optsHtml}</div>
+
+        <div class="reveal" id="reveal" aria-live="polite">
+          <span class="reveal-icon">${ICONS.spark}</span>
+          <div class="reveal-body">
+            <div class="reveal-label">Idea que refuerza</div>
+            <div class="reveal-text">${q.idea}</div>
+          </div>
+        </div>
+
+        <div class="bottombar">
+          <div class="hint">
+            <span class="kbd">1</span><span class="kbd">2</span><span class="kbd">3</span><span class="kbd">4</span>
+            <span>elegir</span>
+            <span class="kbd">→</span>
+            <span>siguiente</span>
+          </div>
+          <button class="btn btn-primary" id="nextBtn" disabled>
+            ${i === QUIZ.length - 1 ? 'Ver cierre' : 'Siguiente'} ${ICONS.arrow}
+          </button>
+        </div>
+      </div>
+    `);
+
+    el.querySelectorAll('.option').forEach(btn => {
+      btn.addEventListener('click', () => answer(parseInt(btn.dataset.idx, 10)));
+    });
+    document.getElementById('nextBtn').addEventListener('click', next);
+  }
+
+  function answer(idx) {
+    if (state.answered) return;
+    state.answered = true;
+    const q = QUIZ[state.index];
+    const buttons = canvas.querySelectorAll('.option');
+    buttons.forEach((b, i) => {
+      b.classList.add('locked');
+      if (i === q.correct) b.classList.add('correct');
+      else if (i === idx) b.classList.add('wrong');
+      else b.classList.add('wrong');
+    });
+    document.getElementById('reveal').classList.add('show');
+    const nextBtn = document.getElementById('nextBtn');
+    nextBtn.disabled = false;
+    nextBtn.classList.add('show');
+    setTimeout(() => nextBtn.focus(), 400);
+    updateProgress();
+  }
+
+  function next() {
+    state.index += 1;
+    render();
+  }
+
+  function renderClosing() {
+    mountScreen(`
+      <div class="closing">
+        <div class="badge">${ICONS.spark}<span>Quiz completado</span></div>
+        <h2>El punto medio <em>sí existe</em></h2>
+        <p>No se trata de controlar todo ni de soltar todo. Disfrutar sin culpa empieza por decidir con calma, sin extremos.</p>
+        <div class="pillars">
+          <div class="pillar">
+            <div class="pillar-num">01</div>
+            <div class="pillar-text">Decidir con calma, no con hambre extrema</div>
+          </div>
+          <div class="pillar">
+            <div class="pillar-num">02</div>
+            <div class="pillar-text">Comer normal, sin compensar con extremos</div>
+          </div>
+          <div class="pillar">
+            <div class="pillar-num">03</div>
+            <div class="pillar-text">Disfrutar sin necesidad de irse al extremo</div>
+          </div>
+        </div>
+        <button class="btn btn-ghost" id="restartBtn">${ICONS.refresh} Volver a empezar</button>
+      </div>
+    `);
+    document.getElementById('restartBtn').addEventListener('click', () => {
+      state = { index: -1, answered: false };
+      render();
+    });
+  }
+
+  // Keyboard navigation
+  document.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' || e.key === ' ') {
+      const focused = document.activeElement;
+      if (focused && focused.classList.contains('btn')) return; // let it click
+      if (state.index === -1) { e.preventDefault(); next(); return; }
+    }
+    if (e.key === 'ArrowRight') {
+      const nb = document.getElementById('nextBtn');
+      if (nb && !nb.disabled) { e.preventDefault(); next(); }
+      else if (state.index === -1) { e.preventDefault(); next(); }
+    }
+    if (state.index >= 0 && state.index < QUIZ.length && !state.answered) {
+      const map = { '1':0, '2':1, '3':2, '4':3, 'a':0, 'b':1, 'c':2, 'd':3, 'A':0, 'B':1, 'C':2, 'D':3 };
+      if (map.hasOwnProperty(e.key)) { e.preventDefault(); answer(map[e.key]); }
+    }
+  });
+
+  render();
+</script>
+
+</body>
+</html>
