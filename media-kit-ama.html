@@ -1,0 +1,730 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Propuesta para Ama · AJL Nutrición</title>
+<style>
+  :root{
+    --blue:#0099ff;
+    --blue-deep:#1420c8;
+    --blue-mid:#1e7bff;
+    --black:#000;
+    --ink:#121212;
+    --gray:#7b828e;
+    --panel:#f7f7f7;
+    --line:#e6e6e6;
+  }
+  *{margin:0;padding:0;box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+    background:#fff;color:var(--black);
+    -webkit-font-smoothing:antialiased;font-size:16px;line-height:1.55;overflow-x:hidden;
+  }
+  ::selection{background:var(--blue);color:#fff}
+  .serif{font-family:Georgia,'Times New Roman',serif;font-style:italic;font-weight:400;letter-spacing:-.01em}
+  .mono{font-family:ui-monospace,'SF Mono',Menlo,monospace}
+
+  /* ============ PRELOADER ============ */
+  #loader{
+    position:fixed;inset:0;z-index:1000;background:#000;
+    display:flex;flex-direction:column;align-items:center;justify-content:center;gap:24px;
+    transition:transform 1s cubic-bezier(.76,0,.24,1);
+    border-radius:0 0 50% 50%/0 0 6% 6%;
+  }
+  #loader.done{transform:translateY(-101%)}
+  #loader .app-ic{
+    width:74px;height:74px;border-radius:22px;
+    background:linear-gradient(160deg,#7cc9ff,#0a6cff 60%,#0339c9);
+    box-shadow:inset 0 2px 4px rgba(255,255,255,.6), 0 16px 44px rgba(0,80,255,.5);
+    display:grid;place-items:center;color:#fff;font-size:32px;font-weight:800;
+    animation:icPop 1s cubic-bezier(.2,.9,.3,1.35) both, icFloat 2.6s 1s ease-in-out infinite alternate;
+  }
+  @keyframes icPop{from{opacity:0;transform:scale(.4) rotate(-14deg);filter:blur(10px)}to{opacity:1;transform:scale(1) rotate(0);filter:blur(0)}}
+  @keyframes icFloat{from{transform:translateY(0) scale(1)}to{transform:translateY(-8px) scale(1.04)}}
+  #loader .wordmark{color:#fff;font-weight:700;font-size:18px;letter-spacing:-.01em;display:flex;overflow:hidden}
+  #loader .wordmark span{display:inline-block;white-space:pre;transform:translateY(120%);animation:wmUp .7s cubic-bezier(.2,.8,.2,1) forwards}
+  @keyframes wmUp{to{transform:translateY(0)}}
+  #loader .load-bar{width:170px;height:3px;border-radius:100px;background:rgba(255,255,255,.15);overflow:hidden}
+  #loader .load-bar i{display:block;height:100%;width:0;border-radius:100px;background:linear-gradient(90deg,#0a6cff,#7cc9ff);animation:loadFill 1.7s .2s cubic-bezier(.4,0,.2,1) forwards}
+  @keyframes loadFill{0%{width:0}55%{width:62%}100%{width:100%}}
+  #loader .tag{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:10.5px;letter-spacing:.2em;text-transform:uppercase;color:rgba(255,255,255,.45);animation:icPop 1s .3s both}
+  body.loading{overflow:hidden}
+  .hero-badge,.hero .sub,.hero-cta,.hero-proofs,.hero-window,.float-wsp{animation-play-state:paused !important}
+  body.loaded .hero-badge,body.loaded .hero .sub,body.loaded .hero-cta,body.loaded .hero-proofs,body.loaded .hero-window,body.loaded .float-wsp{animation-play-state:running !important}
+
+  /* ============ NOTCH NAV ============ */
+  .notch{
+    position:fixed;top:0;left:50%;transform:translateX(-50%);z-index:200;
+    background:#000;border-radius:0 0 18px 18px;
+    display:flex;align-items:center;gap:18px;
+    padding:10px 10px 10px 16px;
+    transition:transform .5s cubic-bezier(.3,.7,.2,1);
+  }
+  .notch::before,.notch::after{content:'';position:absolute;top:0;width:22px;height:22px}
+  .notch::before{left:-22px;background:radial-gradient(circle at bottom left,transparent 21px,#000 22px)}
+  .notch::after{right:-22px;background:radial-gradient(circle at bottom right,transparent 21px,#000 22px)}
+  .notch .logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:#fff;font-weight:700;font-size:14.5px;letter-spacing:-.01em}
+  .notch .logo .app{
+    width:26px;height:26px;border-radius:8px;
+    background:linear-gradient(160deg,#7cc9ff,#0a6cff 60%,#0339c9);
+    box-shadow:inset 0 1px 2px rgba(255,255,255,.6), 0 2px 6px rgba(0,60,200,.5);
+    display:grid;place-items:center;color:#fff;font-size:12px;font-weight:800;
+  }
+  .notch .cta{
+    background:#fff;color:#000;text-decoration:none;font-weight:600;font-size:13px;
+    padding:8px 14px;border-radius:100px;display:inline-flex;align-items:center;gap:6px;
+    transition:transform .3s cubic-bezier(.2,.9,.3,1.4);
+  }
+  .notch .cta:hover{transform:scale(1.06)}
+  .notch.hidden{transform:translateX(-50%) translateY(-110%)}
+
+  /* ============ BOTONES ============ */
+  .btn{
+    display:inline-flex;align-items:center;gap:9px;justify-content:center;
+    background:#000;color:#fff;text-decoration:none;font-weight:600;font-size:15px;
+    padding:15px 28px;border-radius:100px;border:none;cursor:pointer;
+    transition:transform .35s cubic-bezier(.2,.9,.3,1.4),box-shadow .3s;
+    box-shadow:0 6px 20px rgba(0,0,0,.25);
+  }
+  .btn:hover{transform:scale(1.05) translateY(-1px);box-shadow:0 12px 30px rgba(0,0,0,.3)}
+  .btn:active{transform:scale(.96)}
+  .btn.blue{background:var(--blue);box-shadow:0 6px 22px rgba(0,153,255,.45)}
+  .btn.white{background:#fff;color:#000;box-shadow:0 6px 20px rgba(0,0,0,.12)}
+
+  /* ============ HERO ============ */
+  .hero{
+    position:relative;min-height:auto;
+    display:flex;flex-direction:column;align-items:center;justify-content:flex-start;
+    text-align:center;color:#fff;padding:120px 22px 28px;overflow:hidden;
+  }
+  .hero-bg{
+    position:absolute;inset:0;z-index:-2;
+    background:linear-gradient(180deg,#0d17b4 0%,#1653e8 30%,#1e8cff 58%,#7cc9ff 85%,#c9ecff 100%);
+  }
+  .hero-bg::before{
+    content:'';position:absolute;inset:-40%;
+    background:
+      radial-gradient(40% 30% at 30% 30%,rgba(120,210,255,.35),transparent 70%),
+      radial-gradient(35% 30% at 70% 45%,rgba(255,255,255,.18),transparent 70%);
+    animation:drift 14s ease-in-out infinite alternate;
+  }
+  @keyframes drift{from{transform:translate3d(-3%,-2%,0) scale(1)}to{transform:translate3d(3%,3%,0) scale(1.08)}}
+  .hero-bg::after{
+    content:'';position:absolute;inset:0;opacity:.25;mix-blend-mode:overlay;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='0.9'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.35'/%3E%3C/svg%3E");
+  }
+  .hero-badge{
+    display:inline-flex;align-items:center;gap:9px;font-weight:600;font-size:14px;
+    margin-bottom:22px;opacity:0;animation:fadeDown .9s .2s cubic-bezier(.2,.7,.3,1) forwards;
+  }
+  .hero-badge .pin{width:8px;height:8px;border-radius:50%;background:#fff;box-shadow:0 0 12px #fff;animation:pulse 2.2s infinite}
+  @keyframes pulse{50%{box-shadow:0 0 2px #fff}}
+  @keyframes fadeDown{from{opacity:0;transform:translateY(-24px)}to{opacity:1;transform:none}}
+  h1{
+    font-size:clamp(38px,10vw,72px);font-weight:800;letter-spacing:-.045em;line-height:1.03;
+    max-width:800px;margin:0 auto 8px;perspective:900px;text-wrap:balance;
+  }
+  h1 .line2{display:block;font-family:Georgia,serif;font-style:italic;font-weight:400;letter-spacing:-.02em}
+  h1 .wd{display:inline-block;white-space:nowrap}
+  h1 .ch{display:inline-block;opacity:0;will-change:transform,filter;white-space:pre}
+  h1 .ch.go{animation:scatterIn .9s cubic-bezier(.16,.8,.26,1) forwards}
+  @keyframes scatterIn{
+    0%{opacity:0;transform:translate3d(var(--dx),var(--dy),120px) rotateX(var(--rx)) rotateY(var(--ry)) rotate(var(--rz)) scale(1.6);filter:blur(14px)}
+    60%{opacity:1;filter:blur(2px)}
+    100%{opacity:1;transform:translate3d(0,0,0) rotateX(0) rotateY(0) rotate(0) scale(1);filter:blur(0)}
+  }
+  .hero .sub{
+    max-width:560px;margin:18px auto 30px;font-size:17px;line-height:1.6;color:rgba(255,255,255,.92);
+    opacity:0;animation:fadeUp 1s 1.15s cubic-bezier(.2,.7,.3,1) forwards;
+  }
+  @keyframes fadeUp{from{opacity:0;transform:translateY(30px);filter:blur(6px)}to{opacity:1;transform:none;filter:blur(0)}}
+  .hero-cta{opacity:0;animation:fadeUp 1s 1.35s cubic-bezier(.2,.7,.3,1) forwards}
+  .hero-proofs{
+    display:flex;gap:14px 22px;justify-content:center;flex-wrap:wrap;margin-top:24px;
+    color:rgba(255,255,255,.78);font-size:13px;font-weight:500;
+    opacity:0;animation:fadeUp 1s 1.55s cubic-bezier(.2,.7,.3,1) forwards;
+  }
+  .hero-stage{perspective:1400px;width:100%;max-width:640px;margin:44px auto 0;position:relative}
+  .hero-window{
+    background:rgba(255,255,255,.94);backdrop-filter:blur(10px);
+    border-radius:20px;overflow:hidden;text-align:left;color:var(--black);
+    box-shadow:0 60px 140px rgba(6,20,120,.45), 0 10px 30px rgba(6,20,120,.3);
+    transform-style:preserve-3d;
+    transition:transform .18s ease-out;
+    opacity:0;animation:windowIn 1.3s 1.5s cubic-bezier(.16,.8,.26,1) forwards;
+  }
+  @keyframes windowIn{
+    from{opacity:0;transform:translateY(120px) rotateX(24deg) scale(.9);filter:blur(10px)}
+    to{opacity:1;transform:translateY(0) rotateX(0) scale(1);filter:blur(0)}
+  }
+  .hw-bar{display:flex;align-items:center;gap:8px;padding:13px 16px;border-bottom:1px solid var(--line);background:#fafafa}
+  .hw-bar i{width:11px;height:11px;border-radius:50%}
+  .hw-bar i:nth-child(1){background:#ff5f57}.hw-bar i:nth-child(2){background:#febc2e}.hw-bar i:nth-child(3){background:#28c840}
+  .hw-bar .mono{margin-left:8px;font-size:11.5px;color:var(--gray)}
+  .hw-body{display:grid;grid-template-columns:1fr;gap:12px;padding:18px}
+  .hw-card{
+    background:#f2f4f7;border-radius:14px;padding:16px 18px;
+    transform:translateZ(30px);
+    transition:transform .3s,box-shadow .3s,background .3s;
+  }
+  .hw-card:hover{transform:translateZ(55px) scale(1.02);background:#fff;box-shadow:0 16px 34px rgba(0,40,120,.18)}
+  .hw-card .mono{font-size:10.5px;color:var(--blue-mid);display:block;margin-bottom:6px;text-transform:uppercase;letter-spacing:.06em}
+  .hw-card b{font-size:14.5px;display:block;margin-bottom:3px}
+  .hw-card p{font-size:12.5px;color:var(--gray);line-height:1.45}
+  .hero-fade{height:28px;background:linear-gradient(180deg,#c9ecff,#fff)}
+
+  /* ============ PANELES ============ */
+  .panel{
+    background:var(--panel);border-radius:30px;
+    margin:16px 12px;padding:72px 22px;
+    position:relative;overflow:hidden;
+  }
+  .panel.on-white{background:#fff;padding:64px 22px}
+  .container{max-width:640px;margin:0 auto}
+  .center{text-align:center}
+  h2{
+    font-size:clamp(30px,7.6vw,44px);font-weight:800;letter-spacing:-.04em;line-height:1.06;
+    margin-bottom:18px;text-wrap:balance;
+  }
+  .sub{color:var(--gray);font-size:16.5px;line-height:1.6;max-width:560px}
+  .center .sub{margin:0 auto}
+  .eyebrow{
+    display:inline-flex;align-items:center;gap:8px;font-weight:600;font-size:14px;color:var(--ink);
+    margin-bottom:16px;
+  }
+  .eyebrow::before{content:'✦';color:var(--blue)}
+
+  /* reveal */
+  .reveal{opacity:0;transform:translateY(46px) scale(.985);filter:blur(8px);
+    transition:opacity .9s cubic-bezier(.2,.7,.3,1),transform .9s cubic-bezier(.2,.7,.3,1),filter .9s cubic-bezier(.2,.7,.3,1)}
+  .reveal.visible{opacity:1;transform:none;filter:blur(0)}
+  .reveal.d1{transition-delay:.1s}.reveal.d2{transition-delay:.2s}.reveal.d3{transition-delay:.3s}.reveal.d4{transition-delay:.4s}
+
+  /* ============ MARQUEE ============ */
+  .strip{overflow:hidden;padding:26px 0}
+  .strip-track{display:flex;gap:44px;width:max-content;animation:marquee 26s linear infinite}
+  .strip span{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:12.5px;color:var(--gray);white-space:nowrap;display:flex;align-items:center;gap:10px}
+  .strip span::before{content:'✦';color:var(--blue)}
+  @keyframes marquee{to{transform:translateX(-50%)}}
+
+  /* ============ STATS ============ */
+  .stat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:44px;text-align:left}
+  .stat{
+    background:#fff;border-radius:20px;padding:26px 22px;
+    transition:transform .4s cubic-bezier(.2,.8,.3,1.1),box-shadow .4s;
+  }
+  .stat:hover{transform:translateY(-5px);box-shadow:0 20px 44px rgba(0,0,0,.09)}
+  .stat .num{font-size:clamp(30px,8vw,42px);font-weight:800;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+  .stat .num em{font-style:normal;color:var(--blue)}
+  .stat .lbl{font-family:ui-monospace,'SF Mono',Menlo,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--gray);margin-top:8px;display:block}
+  .plat-tag{
+    display:inline-flex;align-items:center;gap:8px;margin:36px 0 0;
+    font-weight:700;font-size:15px;
+  }
+  .plat-tag .dot{width:9px;height:9px;border-radius:50%;background:var(--blue)}
+
+  /* ============ CASOS / MARCAS ============ */
+  .case-cards{display:grid;grid-template-columns:1fr;gap:12px;margin-top:44px;text-align:left}
+  .case{
+    background:#fff;border-radius:20px;padding:24px 24px;
+    display:flex;align-items:center;justify-content:space-between;gap:16px;
+    transition:transform .4s cubic-bezier(.2,.8,.3,1.1),box-shadow .4s;
+  }
+  .case:hover{transform:scale(1.02);box-shadow:0 20px 44px rgba(0,0,0,.09)}
+  .case b{font-size:16px;display:block;letter-spacing:-.01em}
+  .case span{color:var(--gray);font-size:13px}
+  .case .views{
+    font-weight:800;font-size:20px;letter-spacing:-.03em;color:var(--blue);white-space:nowrap;
+    font-variant-numeric:tabular-nums;
+  }
+  .case .views small{display:block;font-weight:500;font-size:10.5px;color:var(--gray);text-align:right;letter-spacing:.06em;text-transform:uppercase;font-family:ui-monospace,Menlo,monospace}
+  .chips{display:flex;gap:9px;justify-content:center;flex-wrap:wrap;margin-top:28px}
+  .chip{
+    background:#ececec;color:var(--ink);font-size:13px;font-weight:500;
+    padding:8px 15px;border-radius:100px;transition:transform .3s cubic-bezier(.2,.9,.3,1.4),background .25s,color .25s;
+    cursor:default;
+  }
+  .chip:hover{transform:scale(1.08) rotate(-1deg);background:#000;color:#fff}
+
+  /* ============ AUDIENCIA ============ */
+  .aud-row{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:40px}
+  .aud{background:#fff;border-radius:18px;padding:22px 12px;text-align:center;transition:transform .4s,box-shadow .4s}
+  .aud:hover{transform:translateY(-4px);box-shadow:0 16px 36px rgba(0,0,0,.08)}
+  .aud b{font-size:clamp(20px,5.6vw,28px);font-weight:800;letter-spacing:-.03em;display:block}
+  .aud span{font-family:ui-monospace,Menlo,monospace;font-size:9.5px;text-transform:uppercase;letter-spacing:.07em;color:var(--gray)}
+  .aud-list{margin-top:14px;background:#fff;border-radius:20px;padding:26px 26px;text-align:left}
+  .aud-list ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+  .aud-list li{display:flex;gap:11px;font-size:14.5px;line-height:1.55}
+  .aud-list li::before{content:'✓';color:var(--blue);font-weight:700;flex-shrink:0}
+
+  /* ============ WHY ============ */
+  .why-cards{display:grid;grid-template-columns:1fr;gap:12px;margin-top:44px;text-align:left}
+  .why{
+    background:var(--panel);border-radius:20px;padding:26px 26px;
+    transition:transform .4s,box-shadow .4s;
+  }
+  .why:hover{transform:translateY(-4px);box-shadow:0 18px 40px rgba(0,0,0,.07)}
+  .why .ic{
+    width:46px;height:46px;border-radius:50%;background:#fff;
+    display:grid;place-items:center;font-size:20px;margin-bottom:14px;
+    box-shadow:0 4px 14px rgba(0,0,0,.06);
+  }
+  .why h3{font-size:17px;font-weight:700;letter-spacing:-.02em;margin-bottom:6px}
+  .why p{color:var(--gray);font-size:14px;line-height:1.6}
+  .quote-line{
+    margin:40px auto 0;max-width:520px;
+    font-family:Georgia,serif;font-style:italic;font-size:clamp(19px,5vw,24px);line-height:1.35;
+  }
+  .quote-line .hl{color:var(--blue)}
+
+  /* ============ PRICING (gradiente azul) ============ */
+  .panel.blue-grad{
+    background:linear-gradient(180deg,#bfe6ff 0%,#37a2ff 26%,#1450e0 60%,#0d17b4 100%);
+    color:#fff;
+  }
+  .panel.blue-grad h2{color:#fff}
+  .panel.blue-grad .sub{color:rgba(255,255,255,.88)}
+  .panel.blue-grad .eyebrow{color:#fff}
+  .panel.blue-grad .eyebrow::before{color:#fff}
+  .price-card{
+    background:#fff;color:var(--black);border-radius:26px;
+    padding:34px 28px;margin-top:44px;text-align:left;position:relative;
+    box-shadow:0 40px 90px rgba(6,20,120,.4);
+    transition:transform .18s ease-out;transform-style:preserve-3d;
+  }
+  .price-card .badge{
+    position:absolute;top:-13px;left:50%;transform:translateX(-50%);
+    background:#000;color:#fff;font-size:11.5px;font-weight:700;
+    padding:6px 16px;border-radius:100px;white-space:nowrap;
+    box-shadow:0 4px 14px rgba(0,0,0,.3);
+  }
+  .price-card .label{font-family:ui-monospace,Menlo,monospace;font-size:11px;text-transform:uppercase;letter-spacing:.08em;color:var(--gray);margin-bottom:10px}
+  .price-card .price{font-size:64px;font-weight:800;letter-spacing:-.045em;line-height:1;transform:translateZ(30px)}
+  .price-card .price small{font-size:17px;font-weight:600;color:var(--gray);letter-spacing:0}
+  .price-card .meta{color:var(--gray);font-size:14px;margin:12px 0 22px;line-height:1.55}
+  .price-card .group-label{font-family:ui-monospace,Menlo,monospace;font-size:10.5px;text-transform:uppercase;letter-spacing:.08em;color:var(--gray);margin:18px 0 12px}
+  .price-card ul{list-style:none;display:flex;flex-direction:column;gap:12px}
+  .price-card li{display:flex;gap:11px;font-size:14.5px;line-height:1.5;align-items:flex-start}
+  .price-card li .ck{
+    width:22px;height:22px;border-radius:50%;border:1.5px solid #cfd3d9;color:var(--blue);
+    display:grid;place-items:center;font-size:11px;font-weight:700;flex-shrink:0;margin-top:1px;
+    transition:background .3s,border-color .3s,color .3s,transform .3s;
+  }
+  .price-card li.bonus .ck{background:#000;border-color:#000;color:#fff}
+  .price-card li.bonus .tagline{
+    display:inline-block;background:#000;color:#fff;font-size:9.5px;font-weight:700;
+    letter-spacing:.09em;text-transform:uppercase;font-family:ui-monospace,Menlo,monospace;
+    padding:3px 8px;border-radius:100px;margin-left:7px;vertical-align:1px;
+  }
+  .price-card li:hover .ck{background:var(--blue);border-color:var(--blue);color:#fff;transform:scale(1.15)}
+  .price-card li small{display:block;color:var(--gray);font-size:12px}
+  .price-card .btn{width:100%;margin-top:26px}
+  .price-grid{display:grid;grid-template-columns:1fr;gap:34px;margin-top:52px}
+  .price-grid .price-card{margin-top:0}
+  .price-grid.single{grid-template-columns:1fr !important;max-width:560px;margin-left:auto;margin-right:auto}
+  .price-card .price{font-size:clamp(38px,10vw,52px)}
+  .price-card .price small{display:block;margin-top:6px}
+  .notes{
+    background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.24);
+    border-radius:22px;padding:28px 24px;margin-top:40px;text-align:left;color:#fff;
+    backdrop-filter:blur(6px);
+  }
+  .notes h3{
+    font-family:ui-monospace,Menlo,monospace;font-size:11px;text-transform:uppercase;
+    letter-spacing:.09em;opacity:.7;font-weight:600;margin-bottom:16px;
+  }
+  .notes ul{list-style:none;display:flex;flex-direction:column;gap:13px}
+  .notes li{
+    position:relative;padding-left:20px;font-size:14.5px;line-height:1.55;
+    color:rgba(255,255,255,.9);
+  }
+  .notes li::before{
+    content:'';position:absolute;left:0;top:8px;
+    width:6px;height:6px;border-radius:50%;background:#fff;opacity:.8;
+  }
+  .notes li b{color:#fff;font-weight:700}
+  .price-note{
+    max-width:520px;margin:22px auto 0;text-align:center;
+    background:rgba(255,255,255,.12);backdrop-filter:blur(8px);border:1px solid rgba(255,255,255,.25);
+    border-radius:16px;padding:18px 24px;font-size:13.5px;color:#fff;line-height:1.6;
+  }
+
+  /* ============ FOOTER ============ */
+  .footer-zone{position:relative;margin-top:60px}
+  footer{
+    background:#000;color:#fff;padding:76px 22px 40px;
+    border-radius:36px 36px 0 0;position:relative;
+  }
+  .foot-cta{text-align:center;padding-bottom:56px;border-bottom:1px solid rgba(255,255,255,.12);max-width:640px;margin:0 auto}
+  .foot-cta h2{color:#fff;margin-bottom:12px}
+  .foot-cta .serif{color:#78d2ff}
+  .foot-cta p{color:#9aa1ab;font-size:16px;max-width:460px;margin:0 auto 30px}
+  .contact-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:640px;margin:44px auto 0;text-align:left}
+  .contact{
+    background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:16px;
+    padding:18px 18px;text-decoration:none;color:#fff;display:block;
+    transition:background .3s,transform .3s;
+  }
+  .contact:hover{background:rgba(255,255,255,.12);transform:translateY(-3px)}
+  .contact span{font-family:ui-monospace,Menlo,monospace;font-size:10px;text-transform:uppercase;letter-spacing:.09em;color:#6d747f;display:block;margin-bottom:5px}
+  .contact b{font-size:13.5px;font-weight:600;word-break:break-all}
+  .foot-bottom{display:flex;justify-content:center;gap:20px;flex-wrap:wrap;padding-top:34px;color:#6d747f;font-size:12.5px;max-width:640px;margin:0 auto;text-align:center}
+
+  /* ============ FLOATING WSP ============ */
+  .float-wsp{
+    position:fixed;bottom:20px;right:20px;z-index:150;
+    display:inline-flex;align-items:center;gap:10px;
+    background:#25d366;color:#fff;text-decoration:none;font-weight:600;font-size:14px;
+    padding:14px 20px;border-radius:100px;
+    box-shadow:0 12px 34px rgba(37,211,102,.45);
+    transition:transform .35s cubic-bezier(.2,.9,.3,1.5),box-shadow .3s;
+    animation:wspIn 1s 2.4s cubic-bezier(.2,.9,.3,1.4) backwards;
+  }
+  @keyframes wspIn{from{opacity:0;transform:translateY(80px) scale(.6)}to{opacity:1;transform:none}}
+  .float-wsp:hover{transform:scale(1.08) rotate(-2deg)}
+  @media(max-width:400px){.float-wsp span{display:none}.float-wsp{padding:14px}}
+
+  @media(min-width:700px){
+    .hw-body{grid-template-columns:repeat(3,1fr)}
+    .case-cards{grid-template-columns:1fr 1fr}
+    .price-grid{grid-template-columns:1fr 1fr;align-items:start}
+    .why-cards{grid-template-columns:1fr 1fr}
+  }
+
+  /* ============ PROPUESTA: PLATOS + REFERENCIAS ============ */
+  .dish-cards{display:grid;grid-template-columns:1fr;gap:12px;margin-top:40px;text-align:left}
+  .dish{background:#fff;border-radius:18px;padding:20px 22px;display:flex;gap:16px;align-items:center;
+    box-shadow:0 1px 0 rgba(0,0,0,.04);transition:transform .3s,box-shadow .3s}
+  .dish:hover{transform:scale(1.02);box-shadow:0 20px 44px rgba(0,0,0,.09)}
+  .dish .emo{font-size:30px;line-height:1;flex-shrink:0}
+  .dish b{font-size:17px;display:block;letter-spacing:-.01em}
+  .dish span{display:inline-block;margin-top:4px;font-size:12.5px;color:var(--blue-mid);font-family:ui-monospace,Menlo,monospace;text-transform:uppercase;letter-spacing:.05em}
+  .container.wide{max-width:1040px}
+  .ref-grid{display:grid;grid-template-columns:1fr;gap:22px;margin-top:40px;justify-items:center}
+  .ref-item{width:100%;max-width:400px}
+  .ref-item .instagram-media{margin:0 auto !important;min-width:0 !important;width:100% !important;max-width:400px !important;border-radius:18px !important}
+  .ref-fallback{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+    min-height:220px;background:#f2f4f7;border-radius:18px;color:var(--ink);text-decoration:none;font-weight:600;font-size:15px}
+  .ref-fallback small{color:var(--gray);font-weight:500;font-size:12px}
+  .price-card .price s{font-size:.5em;color:var(--gray);font-weight:700;text-decoration-thickness:3px;text-decoration-color:#ff4d4f;margin-right:10px;vertical-align:middle}
+  .price-card .deal{display:inline-block;background:#ff4d4f;color:#fff;font-size:12px;font-weight:700;padding:5px 12px;border-radius:100px;margin:14px 0 2px}
+  @media(min-width:700px){.dish-cards{grid-template-columns:1fr 1fr}.ref-grid{grid-template-columns:1fr 1fr}}
+  @media (prefers-reduced-motion: reduce){
+    *,*::before,*::after{animation-duration:.01ms !important;transition-duration:.01ms !important}
+  }
+</style>
+</head>
+<body>
+
+<!-- PRELOADER -->
+<div id="loader">
+  <div class="app-ic">A</div>
+  <div class="wordmark" id="wordmark">Alejandro Loayza Jordan</div>
+  <div class="load-bar"><i></i></div>
+  <div class="tag">Nutrición para tu vida real</div>
+</div>
+
+<!-- NOTCH NAV -->
+<div class="notch" id="notch">
+  <a class="logo" href="#"><span class="app">A</span>AJL</a>
+  <a class="cta" href="#section-precio">Ver tarifas →</a>
+</div>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-badge"><span class="pin"></span>Media Kit &amp; Tarifas · Nutricionista · Lima, Perú</div>
+  <h1 id="hero-title" data-line1="Un nutricionista" data-line2="que la gente escucha."></h1>
+  <p class="sub">Propuesta de colaboración para Ama Mediterranean Meze Bar. 111 mil seguidores entre Instagram y TikTok, y más de medio millón de vistas al mes en una audiencia adulta, limeña y de alto poder adquisitivo que consulta antes de decidir.</p>
+  <div class="hero-cta"><a class="btn" href="#section-precio">Ver tarifas →</a></div>
+  <div class="hero-proofs">
+    <span>✓ 111K seguidores combinados</span>
+    <span>✓ 578.7K vistas en los últimos 30 días</span>
+    <span>✓ Nutricionista · no un influencer</span>
+  </div>
+
+  <div class="hero-stage">
+    <div class="hero-window tilt" data-tilt-max="7">
+      <div class="hw-bar"><i></i><i></i><i></i><span class="mono">tarifas-ajl.campana</span></div>
+      <div class="hw-body">
+        <div class="hw-card"><span class="mono">El video</span><b>Reel Collab en Instagram + TikTok</b><p>Un solo video, publicado como colaboración en Instagram (vive en el perfil de la marca y en el mío) y replicado en TikTok.</p></div>
+        <div class="hw-card"><span class="mono">La difusión</span><b>Cadena de historias de lanzamiento</b><p>3–4 stories el día de publicación con mención, tag y link a la marca, para empujar el reel en sus primeras horas.</p></div>
+        <div class="hw-card"><span class="mono">Incluido</span><b>Pre-producción y grabación</b><p>Reunión de lineamientos, adaptación del guión a mi voz, grabación, edición y publicación coordinada.</p></div>
+      </div>
+    </div>
+  </div>
+</section>
+<div class="hero-fade"></div>
+
+<!-- MARQUEE -->
+<div class="strip">
+  <div class="strip-track">
+    <span>Reel Collab</span><span>Réplica en TikTok</span><span>Instagram + TikTok</span><span>Audiencia NSE A/B</span><span>Preciso · Real · Liberador</span><span>Nutrición para tu vida real</span>
+    <span>Reel Collab</span><span>Réplica en TikTok</span><span>Instagram + TikTok</span><span>Audiencia NSE A/B</span><span>Preciso · Real · Liberador</span><span>Nutrición para tu vida real</span>
+  </div>
+</div>
+
+<!-- STATS -->
+<section class="panel" id="section-stats">
+  <div class="container center">
+    <div class="eyebrow reveal">Los números</div>
+    <h2 class="reveal d1">Alcance real, comunidad<br><span class="serif">que pregunta y compra.</span></h2>
+    <p class="sub reveal d2">Números de agosto 2026, tomados de las métricas nativas de cada plataforma. Sin inflar: seguidores que consultan, agendan y recomiendan.</p>
+
+    <div class="plat-tag reveal d2"><span class="dot"></span>Instagram · @alejandrojloayza_nutricion</div>
+    <div class="stat-grid">
+      <div class="stat reveal"><span class="num" data-count="41.2" data-suffix="K">0</span><span class="lbl">Seguidores</span></div>
+      <div class="stat reveal d1"><span class="num" data-count="578.7" data-suffix="K">0</span><span class="lbl">Vistas · últimos 30 días</span></div>
+      <div class="stat reveal d2"><span class="num" data-count="389" data-suffix="">0</span><span class="lbl">Publicaciones en el perfil</span></div>
+      <div class="stat reveal d3"><span class="num">5–7<em>/sem</em></span><span class="lbl">Frecuencia de publicación</span></div>
+    </div>
+
+    <div class="plat-tag reveal"><span class="dot"></span>TikTok · @alejandrojloayza_nutri</div>
+    <div class="stat-grid">
+      <div class="stat reveal"><span class="num" data-count="69.8" data-suffix="K">0</span><span class="lbl">Seguidores</span></div>
+      <div class="stat reveal d1"><span class="num" data-count="857.6" data-suffix="K">0</span><span class="lbl">Likes acumulados</span></div>
+      <div class="stat reveal d2"><span class="num" data-count="106.1" data-suffix="K">0</span><span class="lbl">Vistas del video más visto</span></div>
+      <div class="stat reveal d3"><span class="num">5–7<em>/sem</em></span><span class="lbl">Frecuencia de publicación</span></div>
+    </div>
+
+    <p class="quote-line reveal d2">111 mil personas en total, y <span class="hl">más de medio millón de vistas al mes</span> — la mayoría comiendo fuera de casa esta semana.</p>
+  </div>
+</section>
+
+<!-- CASOS -->
+<section class="panel on-white" id="section-casos">
+  <div class="container center">
+    <div class="eyebrow reveal">Marcas que ya confiaron</div>
+    <h2 class="reveal d1">Contenido que ya funcionó<br><span class="serif">para otras marcas.</span></h2>
+    <div class="case-cards">
+      <div class="case reveal"><div><b>La dieta de la chela</b><span>Colaboración retail · Pilsen en tienda</span></div><div class="views">573 mil<small>Vistas</small></div></div>
+      <div class="case reveal d1"><div><b>¿Chelitas los finde y bajar de peso?</b><span>Video fijado · TikTok</span></div><div class="views">106 mil<small>Vistas</small></div></div>
+      <div class="case reveal d2"><div><b>Tambo vs Oxxo</b><span>Comparativa de empanadas</span></div><div class="views">144 mil<small>Vistas</small></div></div>
+      <div class="case reveal d3"><div><b>Perdiendo peso en el buffet</b><span>La Bistecca Pasta Grill</span></div><div class="views">Reel collab<small>Restaurante</small></div></div>
+      <div class="case reveal d3"><div><b>Helados para ser fit</b><span>Pickadeli · marca de helados</span></div><div class="views">Reel collab<small>Marca</small></div></div>
+    </div>
+    <div class="chips reveal d2">
+      <span class="chip">Pickadeli</span><span class="chip">Big Boy Burgers</span><span class="chip">La Antojería</span><span class="chip">La Bistecca</span><span class="chip">Gloria PRO</span><span class="chip">La Sanguchería del Perú</span>
+    </div>
+  </div>
+</section>
+
+<!-- PLATOS CANDIDATOS -->
+<section class="panel" id="section-platos">
+  <div class="container center">
+    <div class="eyebrow reveal">La propuesta</div>
+    <h2 class="reveal d1">Los platos que<br><span class="serif">pensamos mostrar.</span></h2>
+    <p class="sub reveal d2">Candidatos de la carta de Ama con el enfoque nutricional con el que los presentaríamos. La selección final se define juntos en la pre-producción.</p>
+    <div class="dish-cards">
+      <div class="dish reveal d0"><div class="emo">🥗</div><div><b>Crudo</b><span>Entrada · baja en calorías</span></div></div>
+      <div class="dish reveal d1"><div class="emo">🐟</div><div><b>Psari Ladolemono</b><span>Fondo · bajo en calorías</span></div></div>
+      <div class="dish reveal d2"><div class="emo">🐙</div><div><b>Oktapodi &amp; Fava</b><span>Fondo · máxima proteína por caloría</span></div></div>
+      <div class="dish reveal d3"><div class="emo">🍢</div><div><b>Souvlaki de Pollo</b><span>Fondo · alta carga proteica</span></div></div>
+    </div>
+  </div>
+</section>
+
+<!-- REFERENCIAS -->
+<section class="panel on-white" id="section-referencias">
+  <div class="container wide center">
+    <div class="eyebrow reveal">Referencias de video</div>
+    <h2 class="reveal d1">El estilo de video<br><span class="serif">que tenemos en mente.</span></h2>
+    <p class="sub reveal d2">Reels de referencia para el formato, el ritmo y la forma de mostrar los platos.</p>
+    <div class="ref-grid">
+      <div class="ref-item reveal d0">
+        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DbEr3rDRkVy/" data-instgrm-version="14">
+          <a class="ref-fallback" href="https://www.instagram.com/reel/DbEr3rDRkVy/" target="_blank" rel="noopener">▶ Referencia 1<small>Ver el reel en Instagram</small></a>
+        </blockquote>
+      </div>
+      <div class="ref-item reveal d1">
+        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DWhriIuBlut/" data-instgrm-version="14">
+          <a class="ref-fallback" href="https://www.instagram.com/reel/DWhriIuBlut/" target="_blank" rel="noopener">▶ Referencia 2<small>Ver el reel en Instagram</small></a>
+        </blockquote>
+      </div>
+      <div class="ref-item reveal d2">
+        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DTMMU4PDJil/" data-instgrm-version="14">
+          <a class="ref-fallback" href="https://www.instagram.com/reel/DTMMU4PDJil/" target="_blank" rel="noopener">▶ Referencia 3<small>Ver el reel en Instagram</small></a>
+        </blockquote>
+      </div>
+      <div class="ref-item reveal d3">
+        <blockquote class="instagram-media" data-instgrm-permalink="https://www.instagram.com/reel/DWxIUVKhylE/" data-instgrm-version="14">
+          <a class="ref-fallback" href="https://www.instagram.com/reel/DWxIUVKhylE/" target="_blank" rel="noopener">▶ Referencia 4<small>Ver el reel en Instagram</small></a>
+        </blockquote>
+      </div>
+    </div>
+  </div>
+</section>
+<script async src="https://www.instagram.com/embed.js"></script>
+
+<!-- PRECIO -->
+<section class="panel blue-grad" id="section-precio">
+  <div class="container center">
+    <div class="eyebrow reveal">Tarifas</div>
+    <h2 class="reveal d1">Un video,<br><span class="serif">en dos plataformas.</span></h2>
+    <p class="sub reveal d2">Tarifa especial de negocio emergente: 50% de descuento sobre nuestra tarifa base. Incluye guión, grabación en el local, edición y publicación coordinada.</p>
+
+    <div class="price-grid single">
+      <div class="price-card tilt reveal d2" data-tilt-max="5">
+        <div class="badge">Tarifa negocio emergente · −50%</div>
+        <div class="label">Reel Collab IG + réplica TikTok</div>
+        <div class="price"><s>USD 1,000</s>USD 500 <small>Sin IGV · sin pauta</small></div>
+        <div class="deal">50% de descuento por negocio emergente</div>
+        <p class="meta">Un solo video que vive en el perfil de la marca y en el mío. Máximo alcance y métricas visibles para ambas partes. Facturado en soles al tipo de cambio del día.</p>
+        <div class="group-label">Qué incluye</div>
+        <ul>
+          <li><span class="ck">✓</span><div>1 Reel publicado como colaboración en Instagram<small>Aparece simultáneamente en el feed de la marca y en el mío; ambos suman alcance y la marca accede a las métricas.</small></div></li>
+          <li><span class="ck">✓</span><div>Réplica del mismo video en TikTok<small>Publicada en @alejandrojloayza_nutri con mención y tag a la marca.</small></div></li>
+          <li><span class="ck">✓</span><div>Reunión de pre-producción<small>Elegimos juntos los platos y el formato a partir de las referencias; el guión lo escribe AJL.</small></div></li>
+          <li><span class="ck">✓</span><div>Producción completa a cargo de AJL<small>Locación, grabación, edición y publicación en horario óptimo. Una ronda de ajustes incluida.</small></div></li>
+          <li class="bonus"><span class="ck">★</span><div>Cadena de historias de lanzamiento<span class="tagline">Bono</span><small>3–4 stories el día de publicación, con mención, tag y link a la marca, para empujar tráfico al reel en sus primeras horas. Incluida sin costo por ser la primera colaboración con la marca.</small></div></li>
+          <li><span class="ck">✓</span><div>Reporte de métricas a los 7 y 30 días<small>Alcance, vistas, guardados, compartidos y comentarios, en captura nativa.</small></div></li>
+        </ul>
+        <a class="btn blue" href="https://wa.me/51912846283?text=Hola%20Alejandro%2C%20vi%20la%20propuesta%20para%20Ama%20Mediterranean%20Meze%20Bar%20y%20quiero%20coordinar." target="_blank" rel="noopener">Coordinar la colaboración →</a>
+      </div>
+    </div>
+
+    <div class="notes reveal d2">
+      <h3>Sobre este precio</h3>
+      <ul>
+        <li>Es una <b>tarifa especial de negocio emergente</b> (50% de descuento sobre la tarifa base de USD 1,000) para el alcance descrito arriba: un video en colaboración en Instagram, con su réplica en TikTok.</li>
+        <li><b>No incluye IGV</b>, que se agrega en la factura.</li>
+        <li><b>No incluye derecho a pauta</b> ni código de publicación para amplificar el contenido desde la marca.</li>
+        <li>La cotización se ajusta si la campaña suma obligaciones: más piezas o plataformas, derecho a pauta, uso del material en canales propios de la marca, exclusividad de categoría, plazos de permanencia o rodajes fuera de Lima.</li>
+        <li>Definido el alcance final en la reunión de pre-producción, envío la cotización cerrada antes de grabar. Válida por 30 días.</li>
+      </ul>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<div class="footer-zone">
+  <footer>
+    <div class="foot-cta">
+      <h2>Hablemos de<br><span class="serif">tu próxima campaña.</span></h2>
+      <p>Envíanos los lineamientos de la campaña y confirmamos disponibilidad y calendario en 48 horas.</p>
+      <a class="btn white" href="https://wa.me/51912846283?text=Hola%20Alejandro%2C%20vi%20tu%20media%20kit%20y%20quiero%20conversar%20sobre%20una%20colaboraci%C3%B3n." target="_blank" rel="noopener">Escríbenos por WhatsApp →</a>
+    </div>
+    <div class="contact-grid">
+      <a class="contact" href="https://wa.me/51912846283" target="_blank" rel="noopener"><span>WhatsApp</span><b>+51 912 846 283</b></a>
+      <a class="contact" href="mailto:ajlnutricion@gmail.com"><span>Correo</span><b>ajlnutricion@gmail.com</b></a>
+      <a class="contact" href="https://instagram.com/alejandrojloayza_nutricion" target="_blank" rel="noopener"><span>Instagram</span><b>@alejandrojloayza_nutricion</b></a>
+      <a class="contact" href="https://tiktok.com/@alejandrojloayza_nutri" target="_blank" rel="noopener"><span>TikTok</span><b>@alejandrojloayza_nutri</b></a>
+    </div>
+    <div class="foot-bottom">© 2026 Alejandro Loayza Jordan · Nutricionista · Lima, Perú</div>
+  </footer>
+</div>
+
+<!-- FLOATING WSP -->
+<a class="float-wsp" href="https://wa.me/51912846283?text=Hola%20Alejandro%2C%20vi%20tu%20media%20kit." target="_blank" rel="noopener">💬 <span>Colaboremos</span></a>
+
+<script>
+(function(){
+  document.body.classList.add('loading');
+
+  /* wordmark letters */
+  var wm=document.getElementById('wordmark');
+  var txt=wm.textContent;wm.textContent='';
+  txt.split('').forEach(function(c,i){
+    var s=document.createElement('span');s.textContent=c;
+    s.style.animationDelay=(0.25+i*0.028)+'s';wm.appendChild(s);
+  });
+
+  /* hero title scatter-in */
+  var h1=document.getElementById('hero-title');
+  function buildLine(text,cls){
+    var frag=document.createDocumentFragment();
+    var wrap=cls?document.createElement('span'):frag;
+    if(cls)wrap.className=cls;
+    text.split(' ').forEach(function(word,wi,arr){
+      var wd=document.createElement('span');wd.className='wd';
+      word.split('').forEach(function(ch){
+        var s=document.createElement('span');s.className='ch';s.textContent=ch;
+        s.style.setProperty('--dx',(Math.random()*160-80)+'px');
+        s.style.setProperty('--dy',(Math.random()*120-60)+'px');
+        s.style.setProperty('--rx',(Math.random()*90-45)+'deg');
+        s.style.setProperty('--ry',(Math.random()*90-45)+'deg');
+        s.style.setProperty('--rz',(Math.random()*40-20)+'deg');
+        wd.appendChild(s);
+      });
+      (cls?wrap:frag).appendChild(wd);
+      if(wi<arr.length-1){
+        var sp=document.createElement('span');sp.className='ch';sp.textContent=' ';
+        (cls?wrap:frag).appendChild(sp);
+      }
+    });
+    if(cls)frag.appendChild(wrap);
+    return frag;
+  }
+  h1.appendChild(buildLine(h1.dataset.line1));
+  h1.appendChild(buildLine(h1.dataset.line2,'line2'));
+
+  function startTitle(){
+    var chars=h1.querySelectorAll('.ch');
+    chars.forEach(function(c,i){
+      c.style.animationDelay=(i*0.024)+'s';
+      c.classList.add('go');
+    });
+  }
+
+  /* loader out */
+  setTimeout(function(){
+    document.getElementById('loader').classList.add('done');
+    document.body.classList.remove('loading');
+    document.body.classList.add('loaded');
+    startTitle();
+  },2100);
+
+  /* reveal on scroll */
+  var io=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(e.isIntersecting){e.target.classList.add('visible');io.unobserve(e.target);}
+    });
+  },{threshold:0.12});
+  document.querySelectorAll('.reveal').forEach(function(el){io.observe(el)});
+
+  /* count-up stats */
+  var cio=new IntersectionObserver(function(entries){
+    entries.forEach(function(e){
+      if(!e.isIntersecting)return;
+      var el=e.target;cio.unobserve(el);
+      var target=parseFloat(el.dataset.count),suffix=el.dataset.suffix||'';
+      var dec=(''+el.dataset.count).indexOf('.')>-1?1:0;
+      var t0=null;
+      function step(ts){
+        if(!t0)t0=ts;
+        var p=Math.min((ts-t0)/1400,1);
+        p=1-Math.pow(1-p,3);
+        el.textContent=(target*p).toFixed(dec)+suffix;
+        if(p<1)requestAnimationFrame(step);
+      }
+      requestAnimationFrame(step);
+    });
+  },{threshold:0.5});
+  document.querySelectorAll('[data-count]').forEach(function(el){cio.observe(el)});
+
+  /* notch hide on scroll down */
+  var lastY=0,notch=document.getElementById('notch');
+  addEventListener('scroll',function(){
+    var y=scrollY;
+    notch.classList.toggle('hidden',y>lastY&&y>140);
+    lastY=y;
+  },{passive:true});
+
+  /* tilt 3D */
+  document.querySelectorAll('.tilt').forEach(function(el){
+    var max=parseFloat(el.dataset.tiltMax||'6');
+    el.addEventListener('pointermove',function(ev){
+      if(ev.pointerType==='touch')return;
+      var r=el.getBoundingClientRect();
+      var px=(ev.clientX-r.left)/r.width-0.5, py=(ev.clientY-r.top)/r.height-0.5;
+      el.style.transform='rotateX('+(-py*max)+'deg) rotateY('+(px*max)+'deg)';
+    });
+    el.addEventListener('pointerleave',function(){el.style.transform=''});
+  });
+})();
+</script>
+
+</body>
+</html>
